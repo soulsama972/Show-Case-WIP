@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include<windows.h>
 #include<TlHelp32.h>
 
@@ -18,9 +16,13 @@ struct WindowInfo
 class Communication
 {
 public:
-    Communication() :isInitDone(false), remoteThreadId(0), yPading(30), left(0), top(0), width(0), height(0)
+    Communication() :isInitDone(false), attach(false), yPading(30), left(0), top(0), width(0), height(0)
     {
         memset(&wi, 0, sizeof(wi));
+    }
+    inline ~Communication()
+    {
+        if (attach) attachToWindow(HWND_DESKTOP);
     }
 
     HWND Init(std::string puzzlePath, bool attach);
@@ -28,7 +30,7 @@ public:
     inline void SendKeyDown(char keyStroke) const
     {
         PostMessageA(wi.hwnd, WM_KEYDOWN, keyStroke, 0);
-        Sleep(1);
+        Sleep(10);
     }
 
     inline void SendKeyUp(char keyStroke) const
@@ -52,19 +54,37 @@ public:
         for (auto& ch : str)
             sendChar(ch);
     }
+    
+    void attachToWindow(HWND attachTo);
 
     inline void sendMouseClick(int x, int y, bool RightClick = false) const
     {
+        POINT p = { x, y };
         LPARAM pos = MAKELPARAM(x + left, y + top + yPading);
-        setFocus();
         PostMessageA(wi.hwnd, WM_MOUSEMOVE, 0, pos);
         PostMessageA(wi.hwnd, WM_LBUTTONDOWN + RightClick * 3, MK_LBUTTON + RightClick, pos);
         PostMessageA(wi.hwnd, WM_LBUTTONUP + RightClick * 3, 0, pos);
     }
 
+    inline void hide() const
+    {
+        ShowWindow(wi.hwnd, SW_HIDE);
+    }
+
+    inline void show() const
+    {
+        ShowWindow(wi.hwnd, SW_SHOW);
+    }
+    
+    inline HWND getHWND() const
+    {
+        return wi.hwnd;
+    }
+
     inline void setFocus() const
     {
-        PostMessageA(wi.hwnd, WM_SETFOCUS, 0, 0);
+       SetFocus(wi.hwnd);
+       //PostMessageA(wi.hwnd, WM_SETFOCUS, 0, 0);
     }
 
     inline void killGame()const
@@ -74,12 +94,7 @@ public:
         CloseHandle(h);
     }
 
-    inline void minGame() const
-    {
-        ShowWindow(wi.hwnd, SW_MINIMIZE);
-    }
-
-    bool isFullscreen(HWND windowHandle);
+    bool isFullscreen(HWND windowHandle) const;
 
 protected:
     int left, top, width, height;
@@ -88,13 +103,12 @@ protected:
 private:
     void openPuzzle(std::string puzzlePath) const;
 
-    DWORD getJavaProcId(const std::unordered_map<DWORD, bool>& procIds) const;
+    DWORD getJavaProcId(const std::unordered_map<DWORD, bool>& ignoreProcList) const;
 
     static BOOL CALLBACK getHWND(HWND hwnd, LPARAM lParam);
 
-
+    bool attach;
     bool isInitDone;
     int yPading;
-    DWORD remoteThreadId;
     WindowInfo wi;
 };

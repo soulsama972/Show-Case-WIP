@@ -1,17 +1,20 @@
 #include"communication.h"
 
+
 HWND Communication::Init(std::string puzzlePath, bool attach)
 {
-    RECT screenRect;
-    DWORD procId = 0;
     std::unordered_map<DWORD, bool> procIds;
     if (isInitDone) return 0;
 
     if (attach)
+    {
         wi.prcoessId = getJavaProcId(procIds);
-    
+        wi.hwnd = FindWindowA("SunAwtFrame", 0);
+    }
+
     else
     {
+        DWORD procId = 0;
         do
         {
             procId = getJavaProcId(procIds);
@@ -22,29 +25,37 @@ HWND Communication::Init(std::string puzzlePath, bool attach)
 
         openPuzzle(puzzlePath);
         wi.prcoessId = getJavaProcId(procIds);
+        EnumWindows(getHWND, (LPARAM)&wi);
     }
 
-    EnumWindows(getHWND, (LPARAM)&wi);
-
     if (!wi.hwnd) return 0;
-
     if (isFullscreen(wi.hwnd)) yPading = 0;
 
-    //attching the input for the app so we can send input from our app
-    remoteThreadId = GetWindowThreadProcessId(wi.hwnd, 0);
 
-    // storing the pos of app and size
+    RECT screenRect;
     GetWindowRect(wi.hwnd, &screenRect);
     left = screenRect.left;
     top = screenRect.top;
     width = screenRect.right - screenRect.left;
     height = screenRect.bottom - screenRect.top;
 
+    this->attach = attach;
     isInitDone = true;
     return wi.hwnd;
 }
 
-bool Communication::isFullscreen(HWND windowHandle)
+void Communication::attachToWindow(HWND attachTo)
+{
+    SetParent(wi.hwnd, attachTo);
+    RECT screenRect;
+    GetWindowRect(wi.hwnd, &screenRect);
+    left = screenRect.left;
+    top = screenRect.top;
+    width = screenRect.right - screenRect.left;
+    height = screenRect.bottom - screenRect.top;
+}
+
+bool Communication::isFullscreen(HWND windowHandle) const
 {
     MONITORINFO monitorInfo = { 0 };
     monitorInfo.cbSize = sizeof(MONITORINFO);
@@ -82,7 +93,7 @@ void Communication::openPuzzle(std::string puzzlePath) const
     Sleep(2000);
 }
 
-DWORD Communication::getJavaProcId(const std::unordered_map<DWORD, bool>& procIds) const
+DWORD Communication::getJavaProcId(const std::unordered_map<DWORD, bool>& ignoreProcList) const
 {
     PROCESSENTRY32 pe32 = { 0 };
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -93,7 +104,7 @@ DWORD Communication::getJavaProcId(const std::unordered_map<DWORD, bool>& procId
         return 0;
     do
     {
-        if (!wcscmp(L"javaw.exe", pe32.szExeFile) && procIds.find(pe32.th32ProcessID) == procIds.end())
+        if (!wcscmp(L"javaw.exe", pe32.szExeFile) && ignoreProcList.find(pe32.th32ProcessID) == ignoreProcList.end())
         {
             CloseHandle(hSnap);
             return pe32.th32ProcessID;

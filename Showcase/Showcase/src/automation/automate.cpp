@@ -1,6 +1,12 @@
 #include"automate.h"
 #include<fstream>
 
+
+Automate::Automate(std::string puzzlePath, bool attach)
+{
+    Init(puzzlePath, attach);
+}
+
 HWND Automate::Init(std::string puzzlePath, bool attach)
 {
     HWND hwnd = Communication::Init(puzzlePath, attach);

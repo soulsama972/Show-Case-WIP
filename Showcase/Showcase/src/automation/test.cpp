@@ -1,21 +1,25 @@
 #include"automate.h"
 
-
-
 std::unordered_map<HWND, Communication> coms;
-
-
 
 //bilge pos:  width /2 - 350  height / 2 - 250  size: 270 540
 int main(void)
 {
-    Automate com;
-    //HWND hwnd = FindWindowA("SunAwtFrame", 0);
-   //.\java_vm\bin\javaw.exe -classpath "F:\games\Puzzle Pirates\.\code\config.jar;
-   com.Init("C:\\games\\Puzzle Pirates", true);
+    
+    HWND no = (HWND)0x001A0554;
+    Automate com("C:\\games\\Puzzle Pirates", true);
+
+   com.attachToWindow(no);
+   //SetFocus(no);
+   //bool a = SetWindowPos(com.getHWND(),0, 0, 0, 0, 0, SWP_NOSIZE);
+   //com.hide();
+   //com.sendChar('1');
+   com.sendMouseClick(614, 280);
+   //com.clickAtScreenPoint(FIRST_PIRATE);
+   //com.show();
    //com.minGame();
    
-   //com.createAccount("F:\\games\\Puzzle Pirates\\accounts.txt", "Aa123456!");
+   //com.createAccount("C:\\games\\Puzzle Pirates\\accounts.txt", "Aa123456!");
 
    //com.Init("C:\\Users\\a\\Desktop\\PP\\Puzzle Pirates", true);
    //com.minGame();
@@ -36,9 +40,10 @@ int main(void)
    //Sleep(200);
    //com.clickAtScreenPoint(PLAY_NOW_PUZZLE);
    //Sleep(200);
-   Sleep(100);
-   com.clickAtScreenPoint(BOTTOM_RIGHT_CONER_VIEW_AREA, true);
+   //Sleep(100);
+   //com.clickAtScreenPoint(BOTTOM_RIGHT_CONER_VIEW_AREA, true);
    ////com.killGame();
+   Sleep(10);
    return 0;
 }
 

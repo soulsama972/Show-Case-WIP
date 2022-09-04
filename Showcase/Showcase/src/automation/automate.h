@@ -67,6 +67,7 @@ class Automate : public Communication
 {
 public:
     Automate() = default;
+    Automate(std::string puzzlePath, bool attach = false);
     HWND Init(std::string puzzlePath, bool attach = false);
     void login(const std::string& userName,const std::string& password, int whichPirate = FIRST_PIRATE) const;
     void createAccount(const std::string& outputFile, const std::string& password);
