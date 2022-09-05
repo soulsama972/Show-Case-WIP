@@ -22,7 +22,11 @@ public:
     }
     inline ~Communication()
     {
-        if (attach) attachToWindow(HWND_DESKTOP);
+        if (attach)
+        {
+            attachToWindow(HWND_DESKTOP);
+            restoreTitleBar();
+        }
     }
 
     HWND Init(std::string puzzlePath, bool attach);
@@ -55,8 +59,6 @@ public:
             sendChar(ch);
     }
     
-    void attachToWindow(HWND attachTo);
-
     inline void sendMouseClick(int x, int y, bool RightClick = false) const
     {
         POINT p = { x, y };
@@ -84,7 +86,6 @@ public:
     inline void setFocus() const
     {
        SetFocus(wi.hwnd);
-       //PostMessageA(wi.hwnd, WM_SETFOCUS, 0, 0);
     }
 
     inline void killGame()const
@@ -94,7 +95,13 @@ public:
         CloseHandle(h);
     }
 
+    void attachToWindow(HWND attachTo);
+
     bool isFullscreen(HWND windowHandle) const;
+
+    void removeTitleBar();
+
+    void restoreTitleBar();
 
 protected:
     int left, top, width, height;

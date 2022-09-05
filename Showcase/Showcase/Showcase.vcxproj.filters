@@ -16,12 +16,13 @@
     <ClCompile Include="src\automation\communication.cpp">
       <Filter>src\automation</Filter>
     </ClCompile>
-    <ClCompile Include="src\automation\test.cpp">
+    <ClCompile Include="src\test.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\AI\agents\bilge\bilge.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\manager\manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\automation\communication.h">
@@ -30,5 +31,6 @@
     <ClInclude Include="src\automation\automate.h">
       <Filter>src\automation</Filter>
     </ClInclude>
+    <ClInclude Include="src\manager\manager.h" />
   </ItemGroup>
 </Project>

@@ -29,8 +29,8 @@ HWND Communication::Init(std::string puzzlePath, bool attach)
     }
 
     if (!wi.hwnd) return 0;
-    if (isFullscreen(wi.hwnd)) yPading = 0;
-
+    LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
+    yPading = lStyle & WS_CAPTION ? 30 : 0;
 
     RECT screenRect;
     GetWindowRect(wi.hwnd, &screenRect);
@@ -68,6 +68,23 @@ bool Communication::isFullscreen(HWND windowHandle) const
         && windowRect.right == monitorInfo.rcMonitor.right
         && windowRect.top == monitorInfo.rcMonitor.top
         && windowRect.bottom == monitorInfo.rcMonitor.bottom;
+}
+
+void Communication::removeTitleBar()
+{
+    yPading = 0;
+    LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
+    lStyle &= ~(WS_CAPTION);
+    SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
+}
+
+void Communication::restoreTitleBar()
+{
+    yPading = 30;
+    LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
+    lStyle |= (WS_CAPTION);
+    SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
+
 }
 
 void Communication::openPuzzle(std::string puzzlePath) const

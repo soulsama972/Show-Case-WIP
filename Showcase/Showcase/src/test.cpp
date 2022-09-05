@@ -1,20 +1,22 @@
-#include"automate.h"
+#include"manager/manager.h"
 
-std::unordered_map<HWND, Communication> coms;
 
 //bilge pos:  width /2 - 350  height / 2 - 250  size: 270 540
 int main(void)
 {
     
-    HWND no = (HWND)0x001A0554;
-    Automate com("C:\\games\\Puzzle Pirates", true);
-
-   com.attachToWindow(no);
+   // HWND no = FindWindowA(0, "made by michael b");
+   // Automate com("C:\\games\\Puzzle Pirates", true);
+   //com.attachToWindow(no);
+   //com.removeTitleBar();
    //SetFocus(no);
    //bool a = SetWindowPos(com.getHWND(),0, 0, 0, 0, 0, SWP_NOSIZE);
    //com.hide();
    //com.sendChar('1');
-   com.sendMouseClick(614, 280);
+    Manager::addInstace("C:\\games\\Puzzle Pirates", "danielkun2", "Aa123456!", 1, true);
+
+
+   //com.sendMouseClick(614, 280);
    //com.clickAtScreenPoint(FIRST_PIRATE);
    //com.show();
    //com.minGame();

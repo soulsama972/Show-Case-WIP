@@ -5,7 +5,7 @@
     <ProjectGuid>00267971-a1f1-45c5-8aac-1fba13ebe610</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>Client.py</StartupFile>
+    <StartupFile>.\GUI\gui.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,7 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Client.py" />
+    <Compile Include="GUI\gui.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.10" />

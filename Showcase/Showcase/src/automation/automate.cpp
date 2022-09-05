@@ -29,7 +29,7 @@ void Automate::login(const std::string& userName, const std::string& password, i
     sendKeyPress(VK_TAB);
 
     // we need to remove the previus user name by press backspace
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 50; i++)
         sendKeyPress(VK_BACK);
 
     sendString(userName);
@@ -39,8 +39,8 @@ void Automate::login(const std::string& userName, const std::string& password, i
 
     sendKeyPress(VK_RETURN);
 
-    Sleep(3000);
-    clickAtScreenPoint(whichPirate);
+    Sleep(2000);
+    clickAtScreenPoint(FIRST_PIRATE + whichPirate - 1);
 }
 
 void Automate::createAccount(const std::string& outputFile, const std::string& password)
