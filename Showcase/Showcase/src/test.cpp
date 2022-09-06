@@ -13,7 +13,7 @@ int main(void)
    //bool a = SetWindowPos(com.getHWND(),0, 0, 0, 0, 0, SWP_NOSIZE);
    //com.hide();
    //com.sendChar('1');
-    Manager::addInstace("C:\\games\\Puzzle Pirates", "danielkun2", "Aa123456!", 1, true);
+    Manager::createInstace("C:\\games\\Puzzle Pirates", "danielkun2", "Aa123456!", 1, true);
 
 
    //com.sendMouseClick(614, 280);

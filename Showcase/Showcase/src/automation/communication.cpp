@@ -1,18 +1,14 @@
 #include"communication.h"
 
 
-HWND Communication::Init(std::string puzzlePath, bool attach)
+HWND Communication::Init(std::string puzzlePath, CreateType type)
 {
     std::unordered_map<DWORD, bool> procIds;
     if (isInitDone) return 0;
-
-    if (attach)
+    
+    switch (type)
     {
-        wi.prcoessId = getJavaProcId(procIds);
-        wi.hwnd = FindWindowA("SunAwtFrame", 0);
-    }
-
-    else
+    case CREATE_PROCESS:
     {
         DWORD procId = 0;
         do
@@ -22,47 +18,43 @@ HWND Communication::Init(std::string puzzlePath, bool attach)
 
         } while (procId);
 
-
         openPuzzle(puzzlePath);
         wi.prcoessId = getJavaProcId(procIds);
         EnumWindows(getHWND, (LPARAM)&wi);
+    } break;
+    case ATTACH:
+    {
+        wi.prcoessId = getJavaProcId(procIds);
+        wi.hwnd = FindWindowA("SunAwtFrame", 0);
+        attach = true;
+    } break;
+    case DESKTOP:
+    {
+        wi.hwnd = HWND_DESKTOP;
+    }break;
+    default:
+        break;
     }
 
-    if (!wi.hwnd) return 0;
-    LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
-    yPading = lStyle & WS_CAPTION ? 30 : 0;
-
-    RECT screenRect;
-    GetWindowRect(wi.hwnd, &screenRect);
-    left = screenRect.left;
-    top = screenRect.top;
-    width = screenRect.right - screenRect.left;
-    height = screenRect.bottom - screenRect.top;
-
-    this->attach = attach;
     isInitDone = true;
+    updateWindowRect();
     return wi.hwnd;
 }
 
 void Communication::attachToWindow(HWND attachTo)
 {
     SetParent(wi.hwnd, attachTo);
-    RECT screenRect;
-    GetWindowRect(wi.hwnd, &screenRect);
-    left = screenRect.left;
-    top = screenRect.top;
-    width = screenRect.right - screenRect.left;
-    height = screenRect.bottom - screenRect.top;
+    updateWindowRect();
 }
 
-bool Communication::isFullscreen(HWND windowHandle) const
+bool Communication::isFullscreen() const
 {
     MONITORINFO monitorInfo = { 0 };
     monitorInfo.cbSize = sizeof(MONITORINFO);
-    GetMonitorInfo(MonitorFromWindow(windowHandle, MONITOR_DEFAULTTOPRIMARY), &monitorInfo);
+    GetMonitorInfo(MonitorFromWindow(wi.hwnd, MONITOR_DEFAULTTOPRIMARY), &monitorInfo);
 
     RECT windowRect;
-    GetWindowRect(windowHandle, &windowRect);
+    GetWindowRect(wi.hwnd, &windowRect);
 
     return windowRect.left == monitorInfo.rcMonitor.left
         && windowRect.right == monitorInfo.rcMonitor.right
@@ -76,6 +68,7 @@ void Communication::removeTitleBar()
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
     lStyle &= ~(WS_CAPTION);
     SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
+    updateWindowRect();
 }
 
 void Communication::restoreTitleBar()
@@ -84,6 +77,20 @@ void Communication::restoreTitleBar()
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
     lStyle |= (WS_CAPTION);
     SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
+    updateWindowRect();
+}
+
+void Communication::updateWindowRect()
+{
+    RECT screenRect;
+    GetWindowRect(wi.hwnd, &screenRect);
+    left = screenRect.left;
+    top = screenRect.top;
+    width = screenRect.right - screenRect.left;
+    height = screenRect.bottom - screenRect.top;
+
+    LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
+    yPading = lStyle & WS_CAPTION ? 30 : 0;
 
 }
 

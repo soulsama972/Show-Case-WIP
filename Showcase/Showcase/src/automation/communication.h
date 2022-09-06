@@ -7,6 +7,14 @@
 #include<unordered_map>
 #include<filesystem>
 
+enum CreateType
+{
+    CREATE_PROCESS, // used for create puzzle pirate process and attach to it
+    ATTACH, // used for attach the first puzzle pirate id found
+    DESKTOP // used to set hwnd to zero which make all communication as if we were press/moving from desktop
+
+};
+
 struct WindowInfo
 {
     DWORD prcoessId;
@@ -29,7 +37,7 @@ public:
         }
     }
 
-    HWND Init(std::string puzzlePath, bool attach);
+    HWND Init(std::string puzzlePath, CreateType type);
 
     inline void SendKeyDown(char keyStroke) const
     {
@@ -82,6 +90,11 @@ public:
     {
         return wi.hwnd;
     }
+    
+    inline void setHWND(HWND hwnd)
+    {
+        wi.hwnd = hwnd;
+    }
 
     inline void setFocus() const
     {
@@ -97,13 +110,14 @@ public:
 
     void attachToWindow(HWND attachTo);
 
-    bool isFullscreen(HWND windowHandle) const;
+    bool isFullscreen() const;
 
     void removeTitleBar();
 
     void restoreTitleBar();
 
 protected:
+    void updateWindowRect();
     int left, top, width, height;
 
 

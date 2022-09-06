@@ -2,23 +2,21 @@
 #include<fstream>
 
 
-Automate::Automate(std::string puzzlePath, bool attach)
+Automate::Automate(std::string puzzlePath, CreateType type)
 {
-    Init(puzzlePath, attach);
+    Init(puzzlePath, type);
 }
 
-HWND Automate::Init(std::string puzzlePath, bool attach)
+HWND Automate::Init(std::string puzzlePath, CreateType type)
 {
-    HWND hwnd = Communication::Init(puzzlePath, attach);
+    HWND hwnd = Communication::Init(puzzlePath, type);
     addScreenPoint();
-
     static bool once = true;
     if (once)
     {
         srand((unsigned)time(NULL));
         once = false;
     }
-
     return hwnd;
 }
 
