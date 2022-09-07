@@ -1,12 +1,21 @@
 from ctypes import *
 from ctypes import wintypes
-from time import sleep
+from enum import IntEnum
+from typing import Tuple
+
+
+
+class CreateType(IntEnum):
+    CREATE_PROCESS = 0,
+    ATTACH = 1,
+    BROADCAST = 2
+
 
 class Manager:
     def __init__(self) -> None:
         self.mydll = cdll.LoadLibrary("./cppWrapper/manager.dll")
         
-        self.mydll.createInstace.argtypes = c_char_p, c_char_p, c_char_p, c_int, c_bool
+        self.mydll.createInstace.argtypes = c_char_p, c_int
         self.mydll.createInstace.restype = c_int
         
         self.mydll.removeInstace.argtypes = c_int,
@@ -51,13 +60,48 @@ class Manager:
         self.mydll.attachToWindow.argtypes = c_int, c_int
         self.mydll.attachToWindow.restype = None
 
+        self.mydll.login.argtypes = c_int, c_char_p, c_char_p, c_int
+        self.mydll.login.restype = None
 
-    def create_instance(self, puzzle_pirate_path: str, user_name: str, password: str, pirate_number: int) -> int:
-        return self.mydll.addInstace(puzzle_pirate_path.encode("utf-8"),user_name.encode("utf-8"), password.encode("utf-8"), c_int(pirate_number) , c_bool(True if len(user_name) > 0 else False))
+        self.mydll.getMousePos.argtypes = c_int, POINTER(c_int), POINTER(c_int)
+        self.mydll.getMousePos.restype = c_bool
+
+        self.mydll.attachToWindow.argtypes = c_int, c_int
+        self.mydll.attachToWindow.restype = None
+
+        self.mydll.findWindow.argtypes = c_char_p,
+        self.mydll.findWindow.restype = c_int
+
+        self.mydll.moveWindow.argtypes = c_int, c_int, c_int
+        self.mydll.moveWindow.restype = None
+
+        self.mydll.hide.argtypes = c_int,
+        self.mydll.hide.restype = None
+
+        self.mydll.show.argtypes = c_int,
+        self.mydll.show.restype = None
+
+    def unload_DLL(self):
+        windll.kernel32.FreeLibrary.argtypes = [wintypes.HMODULE]
+        libHandle = self.mydll._handle
+        del self.mydll
+        windll.kernel32.FreeLibrary(libHandle)
+
+    def create_instance(self, puzzle_pirate_path: str = "", type: CreateType = CreateType.BROADCAST) -> int:
+        return self.mydll.createInstace(puzzle_pirate_path.encode("utf-8"), c_int(type.value))
 
     def remove_instance(self, key: int):
         self.mydll.removeInstace(c_int(key))
+
+    def remove_title_bar(self, key: int):
+        self.mydll.removeTitleBar(c_int(key))
     
+    def restroe_title_bar(self, key: int):
+        self.mydll.restoreTitleBar(c_int(key))
+
+    def move_window(self, key: int, x: int, y: int, width: int, height: int):
+        self.mydll.moveWindow(c_int(key), c_int(x), c_int(y), c_int(width), c_int(height))
+
     def mouse_click(self, key: int, x: int, y: int, right_click: bool = False):
         self.mydll.mouseClick(c_int(key), c_int(x), c_int(y), c_bool(right_click))
 
@@ -76,16 +120,36 @@ class Manager:
     def send_string(self, key: int, string: str):
         self.mydll.sendString(c_int(key), string.encode("utf-8"))
 
-    def unload_DLL(self): 
-        windll.kernel32.FreeLibrary.argtypes = [wintypes.HMODULE]
-        libHandle = self.mydll._handle
-        del self.mydll
-        windll.kernel32.FreeLibrary(libHandle)
-      
+    def get_mouse_pos(self, key) -> Tuple[int, int]:
+        x = c_int()
+        y = c_int()
+        if self.mydll.getMousePos(key, byref(x), byref(y)):
+            return x.value, y.value
+        return -1, -1
 
-m = Manager()
-#m.create_instance("C:\\games\\Puzzle Pirates", "danielkun2", "Aa123456!", 1)
+    def FindWindow(self, window_name: str) -> int:
+        return self.mydll.findWindow(window_name.encode("utf-8"))
 
-sleep(3)
-m.send_string(0, "test")
-x = 1
+    def login(self, key: int, user_name: str, password: str, pirate_number: int):
+        return self.mydll.login(c_int(key), user_name.encode("utf-8"), password.encode("utf-8"), c_int(pirate_number))
+
+    def attachToWindow(self, fromKey: int, toKey: int):
+        self.mydll.attachToWindow(fromKey, toKey)
+
+    def hide(self, key: int):
+        self.mydll.hide(c_int(key))
+    
+    def show(self, key: int):
+        self.mydll.show(c_int(key))
+
+
+# m = Manager()
+# a = m.create_instance("C:\\games\\Puzzle Pirates", CreateType.CREATE_PROCESS)
+# # sleep(3)
+# a = m.create_instance()
+# m.get_my_HWND()
+# while True:
+#     print(m.get_mouse_pos(a))
+
+# m.mouse_click(a, 10, 0, True)
+# x = 1

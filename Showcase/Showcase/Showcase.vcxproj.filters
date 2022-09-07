@@ -10,7 +10,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\automation\automate.cpp">
+    <ClCompile Include="src\automation\puzzlePirateAutomation.cpp">
       <Filter>src\automation</Filter>
     </ClCompile>
     <ClCompile Include="src\automation\communication.cpp">
@@ -23,14 +23,18 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\manager\manager.cpp" />
+    <ClCompile Include="src\utils\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\automation\communication.h">
       <Filter>src\automation</Filter>
     </ClInclude>
-    <ClInclude Include="src\automation\automate.h">
+    <ClInclude Include="src\automation\puzzlePirateAutomation.h">
       <Filter>src\automation</Filter>
     </ClInclude>
     <ClInclude Include="src\manager\manager.h" />
+    <ClInclude Include="src\utils\utils.h" />
   </ItemGroup>
 </Project>

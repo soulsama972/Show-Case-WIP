@@ -1,45 +1,46 @@
 #pragma once
 #include<windows.h>
 #include<TlHelp32.h>
-
-#include<iostream>
-#include<string>
 #include<unordered_map>
 #include<filesystem>
+#include"utils/utils.h"
 
 enum CreateType
 {
     CREATE_PROCESS, // used for create puzzle pirate process and attach to it
     ATTACH, // used for attach the first puzzle pirate id found
-    DESKTOP // used to set hwnd to zero which make all communication as if we were press/moving from desktop
+    BROADCAST // used for sent to all top-level windows in the system
 
 };
 
-struct WindowInfo
+struct ScreenPoint
 {
-    DWORD prcoessId;
-    HWND hwnd;
+    ScreenPoint() :x(0), y(0) {}
+    ScreenPoint(int x, int y) :x(x), y(y) {}
+    int x;
+    int y;
 };
 
 class Communication
 {
 public:
-    Communication() :isInitDone(false), attach(false), yPading(30), left(0), top(0), width(0), height(0)
+    Communication(): yPading(30), left(0), top(0), width(0), height(0)
     {
         memset(&wi, 0, sizeof(wi));
     }
+    
     inline ~Communication()
     {
-        if (attach)
+        if (wi.attach)
         {
             attachToWindow(HWND_DESKTOP);
             restoreTitleBar();
         }
     }
 
-    HWND Init(std::string puzzlePath, CreateType type);
+    HWND Init(CreateType type);
 
-    inline void SendKeyDown(char keyStroke) const
+    inline void sendKeyDown(char keyStroke) const
     {
         PostMessageA(wi.hwnd, WM_KEYDOWN, keyStroke, 0);
         Sleep(10);
@@ -52,7 +53,7 @@ public:
 
     inline void sendKeyPress(char keyStroke) const
     {
-        SendKeyDown(keyStroke);
+        sendKeyDown(keyStroke);
         SendKeyUp(keyStroke);
     }
 
@@ -76,6 +77,15 @@ public:
         PostMessageA(wi.hwnd, WM_LBUTTONUP + RightClick * 3, 0, pos);
     }
 
+    inline void sendClickAtScreenPoint(int namedPoint, bool rightClick = false) const
+    {
+        if (msp.find(namedPoint) != msp.end())
+        {
+            auto sp = msp.at(namedPoint);
+            sendMouseClick(sp.x, sp.y, rightClick);
+        }
+    }
+
     inline void hide() const
     {
         ShowWindow(wi.hwnd, SW_HIDE);
@@ -86,6 +96,10 @@ public:
         ShowWindow(wi.hwnd, SW_SHOW);
     }
     
+    void setWindowRect(int x, int y, int width, int height);
+
+    void getMousePos(int& x, int& y);
+
     inline HWND getHWND() const
     {
         return wi.hwnd;
@@ -118,17 +132,14 @@ public:
 
 protected:
     void updateWindowRect();
-    int left, top, width, height;
-
+    virtual WindowInfo openProcess() = 0;
+    virtual WindowInfo attachProcess() = 0;
+    virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) = 0;
 
 private:
-    void openPuzzle(std::string puzzlePath) const;
+    std::unordered_map<int, ScreenPoint> msp;
+    int left, top, width, height;
 
-    DWORD getJavaProcId(const std::unordered_map<DWORD, bool>& ignoreProcList) const;
-
-    static BOOL CALLBACK getHWND(HWND hwnd, LPARAM lParam);
-
-    bool attach;
     bool isInitDone;
     int yPading;
     WindowInfo wi;

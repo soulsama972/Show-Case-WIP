@@ -11,3 +11,4 @@
 *.exp
 *.lib
 *.pdb
+*__pycache__*

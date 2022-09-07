@@ -1,11 +1,11 @@
 #pragma once
-#include"automate.h"
+#include"automation/puzzlePirateAutomation.h"
 #define EXPORT extern "C" __declspec(dllexport)
 
 
 namespace Manager
 {
-	EXPORT HWND createInstace(const char* puzzlePiratePath,const char* userName,const char* password, int pirateNumber, bool login);
+	EXPORT HWND createInstace(const char* puzzlePiratePath, CreateType type);
 	EXPORT void removeInstace(HWND key);
 	EXPORT void mouseClick(HWND key, int x, int y, bool rightClick);
 	EXPORT void sendKeyPress(HWND key, char keyStroke);
@@ -20,4 +20,8 @@ namespace Manager
 	EXPORT void restoreTitleBar(HWND key);
 	EXPORT bool isFullScreen(HWND key);
 	EXPORT void attachToWindow(HWND key, HWND attachTo);
+	EXPORT void login(HWND key, const char* userName, const char* password, int pirateNumber);
+	EXPORT bool getMousePos(HWND key, int& x, int& y);
+	EXPORT HWND findWindow(const char * str);
+	EXPORT void moveWindow(HWND key, int x, int y, int width, int height);
 };
