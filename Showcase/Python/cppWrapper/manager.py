@@ -72,14 +72,17 @@ class Manager:
         self.mydll.findWindow.argtypes = c_char_p,
         self.mydll.findWindow.restype = c_int
 
-        self.mydll.moveWindow.argtypes = c_int, c_int, c_int
-        self.mydll.moveWindow.restype = None
+        self.mydll.updateRectWindow.argtypes = c_int, c_int, c_int
+        self.mydll.updateRectWindow.restype = None
 
         self.mydll.hide.argtypes = c_int,
         self.mydll.hide.restype = None
 
         self.mydll.show.argtypes = c_int,
         self.mydll.show.restype = None
+
+        self.mydll.updateImage.argtypes = c_int, c_int, c_int, c_int
+        self.mydll.updateImage.restype = None
 
     def unload_DLL(self):
         windll.kernel32.FreeLibrary.argtypes = [wintypes.HMODULE]
@@ -99,8 +102,8 @@ class Manager:
     def restroe_title_bar(self, key: int):
         self.mydll.restoreTitleBar(c_int(key))
 
-    def move_window(self, key: int, x: int, y: int, width: int, height: int):
-        self.mydll.moveWindow(c_int(key), c_int(x), c_int(y), c_int(width), c_int(height))
+    def update_rect_window(self, key: int, x: int, y: int, width: int, height: int):
+        self.mydll.updateRectWindow(c_int(key), c_int(x), c_int(y), c_int(width), c_int(height))
 
     def mouse_click(self, key: int, x: int, y: int, right_click: bool = False):
         self.mydll.mouseClick(c_int(key), c_int(x), c_int(y), c_bool(right_click))
@@ -142,6 +145,8 @@ class Manager:
     def show(self, key: int):
         self.mydll.show(c_int(key))
 
+    def update_image(self, key: int, target_HWND: int, x: int, y: int):
+        self.mydll.updateImage(c_int(key), c_int(target_HWND), c_int(x), c_int(y))
 
 # m = Manager()
 # a = m.create_instance("C:\\games\\Puzzle Pirates", CreateType.CREATE_PROCESS)

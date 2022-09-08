@@ -3,7 +3,8 @@
 #include<TlHelp32.h>
 #include<unordered_map>
 #include<filesystem>
-#include"utils/utils.h"
+
+#include"../utils/utils.h"
 
 enum CreateType
 {
@@ -29,15 +30,6 @@ public:
         memset(&wi, 0, sizeof(wi));
     }
     
-    inline ~Communication()
-    {
-        if (wi.attach)
-        {
-            attachToWindow(HWND_DESKTOP);
-            restoreTitleBar();
-        }
-    }
-
     HWND Init(CreateType type);
 
     inline void sendKeyDown(char keyStroke) const
@@ -70,7 +62,6 @@ public:
     
     inline void sendMouseClick(int x, int y, bool RightClick = false) const
     {
-        POINT p = { x, y };
         LPARAM pos = MAKELPARAM(x + left, y + top + yPading);
         PostMessageA(wi.hwnd, WM_MOUSEMOVE, 0, pos);
         PostMessageA(wi.hwnd, WM_LBUTTONDOWN + RightClick * 3, MK_LBUTTON + RightClick, pos);
@@ -130,6 +121,8 @@ public:
 
     void restoreTitleBar();
 
+    void updateImage(HWND target, int x, int y) const;
+
 protected:
     void updateWindowRect();
     virtual WindowInfo openProcess() = 0;
@@ -138,9 +131,7 @@ protected:
 
 private:
     std::unordered_map<int, ScreenPoint> msp;
-    int left, top, width, height;
-
-    bool isInitDone;
     int yPading;
+    int left, top, width, height;
     WindowInfo wi;
 };

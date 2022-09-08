@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
-    <height>941</height>
+    <width>1154</width>
+    <height>891</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -44,6 +44,12 @@
     </property>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
         <width>1100</width>
@@ -75,7 +81,13 @@
        <attribute name="title">
         <string>Controller</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
+       <layout class="QFormLayout" name="formLayout_4">
+        <property name="horizontalSpacing">
+         <number>0</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>0</number>
+        </property>
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -88,10 +100,7 @@
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item row="0" column="2">
+        <item row="0" column="0">
          <layout class="QFormLayout" name="formLayout">
           <property name="horizontalSpacing">
            <number>0</number>
@@ -272,11 +281,8 @@
           </item>
          </layout>
         </item>
-        <item row="0" column="3">
-         <widget class="QFrame" name="frame_display">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_display">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>1</horstretch>
@@ -286,26 +292,17 @@
           <property name="minimumSize">
            <size>
             <width>800</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
+            <height>600</height>
            </size>
           </property>
           <property name="mouseTracking">
            <bool>true</bool>
           </property>
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
+          <property name="text">
+           <string/>
           </property>
          </widget>
         </item>

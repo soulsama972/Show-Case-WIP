@@ -116,6 +116,7 @@ WindowInfo PuzzlePirateAutomation::openProcess()
     createProcess(path);
 
     wi.prcoessId = getJavaProcId(procIds);
+    wi.attach = false;
     EnumWindows(Utils::getHWND, (LPARAM)&wi);
     return wi;
 
@@ -126,7 +127,8 @@ WindowInfo PuzzlePirateAutomation::attachProcess()
     WindowInfo wi = { 0 };
     wi.prcoessId = getJavaProcId({}); // passing empty list so we attach to the first process found
     wi.hwnd = FindWindowA("SunAwtFrame", 0);
-    return WindowInfo();
+    wi.attach = true;
+    return wi;
 }
 
 void PuzzlePirateAutomation::updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height)
@@ -170,12 +172,12 @@ void PuzzlePirateAutomation::updateScreenPoint(std::unordered_map<int, ScreenPoi
 
 DWORD PuzzlePirateAutomation::getJavaProcId(const std::unordered_map<DWORD, bool>& ignoreProcList) const
 {
-    PROCESSENTRY32 pe32 = { 0 };
+    PROCESSENTRY32W pe32 = { 0 };
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hSnap == INVALID_HANDLE_VALUE)
         return 0;
     pe32.dwSize = sizeof(pe32);
-    if (!Process32First(hSnap, &pe32))
+    if (!Process32FirstW(hSnap, &pe32))
         return 0;
     do
     {
@@ -185,7 +187,7 @@ DWORD PuzzlePirateAutomation::getJavaProcId(const std::unordered_map<DWORD, bool
             return pe32.th32ProcessID;
         }
 
-    } while (Process32Next(hSnap, &pe32));
+    } while (Process32NextW(hSnap, &pe32));
     CloseHandle(hSnap);
     return 0;
 }

@@ -26,6 +26,12 @@
     <ClCompile Include="src\utils\utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Proxy\proxy.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Test\Source.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\automation\communication.h">
@@ -36,5 +42,8 @@
     </ClInclude>
     <ClInclude Include="src\manager\manager.h" />
     <ClInclude Include="src\utils\utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="makefile" />
   </ItemGroup>
 </Project>

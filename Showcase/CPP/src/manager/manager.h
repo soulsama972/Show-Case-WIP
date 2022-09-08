@@ -1,5 +1,5 @@
 #pragma once
-#include"automation/puzzlePirateAutomation.h"
+#include"../automation/puzzlePirateAutomation.h"
 #define EXPORT extern "C" __declspec(dllexport)
 
 
@@ -23,5 +23,6 @@ namespace Manager
 	EXPORT void login(HWND key, const char* userName, const char* password, int pirateNumber);
 	EXPORT bool getMousePos(HWND key, int& x, int& y);
 	EXPORT HWND findWindow(const char * str);
-	EXPORT void moveWindow(HWND key, int x, int y, int width, int height);
+	EXPORT void updateRectWindow(HWND key, int x, int y, int width, int height);
+	EXPORT void updateImage(HWND key, HWND target, int x, int y);
 };

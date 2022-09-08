@@ -1,28 +1,26 @@
 #include"manager/manager.h"
 
-
 //bilge pos:  width /2 - 350  height / 2 - 250  size: 270 540
-#ifdef _DEBUG
 int main(void)
 {
+    
+    PuzzlePirateAutomation c;
+    c.Init("C:\\games\\Puzzle Pirates", CreateType::CREATE_PROCESS);
+    //ShowWindow(c.getHWND(), SW_SHOWNA);
 
-    // HWND no = FindWindowA(0, "made by michael b");
-    // PuzzlePirateAutomation com("C:\\games\\Puzzle Pirates", true);
-    //com.attachToWindow(no);
-    //com.removeTitleBar();
-    //SetFocus(no);
-    //bool a = SetWindowPos(com.getHWND(),0, 0, 0, 0, 0, SWP_NOSIZE);
-    //com.hide();
-    //com.sendChar('1');
-    //HWND a = Manager::createInstace("", BROADCAST);
-    //Sleep(3000);
-    //Manager::sendKeyPress(a, 'A');
-    //Manager::login(a, "danielkun2", "Aa123456!", 1);
+    //c.login("danielkun2", "Aa123456!", 1);
+    //return 0;
 
-    HWND a = Manager::createInstace("C:\\games\\Puzzle Pirates", CreateType::CREATE_PROCESS);
-    Sleep(3000);
-    Manager::login(a,"danielkun2", "Aa123456!", 1);
+
+    c.hide();
     Sleep(1000);
+    c.show();
+    Sleep(1000);
+
+    //HWND a = Manager::createInstace("C:\\games\\Puzzle Pirates", CreateType::ATTACH);
+    //Manager::login(a,"danielkun2", "Aa123456!", 1);
+    //Sleep(1000);
+
    //com.sendMouseClick(614, 280);
    //com.clickAtScreenPoint(FIRST_PIRATE);
    //com.show();
@@ -56,6 +54,6 @@ int main(void)
     return 0;
 }
 
-#endif // DEBUG
+
 
 

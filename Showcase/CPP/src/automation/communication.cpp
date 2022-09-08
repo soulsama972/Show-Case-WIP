@@ -65,7 +65,7 @@ void Communication::removeTitleBar()
 {
     yPading = 0;
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
-    lStyle &= ~(WS_CAPTION);
+    lStyle &= ~(WS_BORDER);
     SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
     updateWindowRect();
 }
@@ -74,7 +74,7 @@ void Communication::restoreTitleBar()
 {
     yPading = 30;
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
-    lStyle |= (WS_CAPTION);
+    lStyle |= (WS_BORDER);
     SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
     updateWindowRect();
 }
@@ -89,8 +89,22 @@ void Communication::updateWindowRect()
     height = screenRect.bottom - screenRect.top;
 
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
-    yPading = lStyle & WS_CAPTION ? 30 : 0;
+    yPading = lStyle & WS_BORDER ? 30 : 0;
 
-    updateScreenPoint(msp,left, top, width, height);
+    updateScreenPoint(msp,left,top, width, height);
 }
 
+void Communication::updateImage(HWND target, int x, int y) const
+{
+
+    HDC hdcSrc = GetDC(wi.hwnd);
+    HDC hdcDst = GetDC(target);
+
+    // This is the best stretch mode.
+    SetStretchBltMode(hdcDst, HALFTONE);
+    StretchBlt(hdcDst, x, y, width, height, hdcSrc, 0, 0, width, height - yPading, SRCCOPY);
+
+    ReleaseDC(wi.hwnd, hdcSrc);
+    ReleaseDC(target, hdcDst);
+
+}

@@ -107,9 +107,14 @@ namespace Manager
 		return FindWindowA(0, str);
 	}
 
-	void moveWindow(HWND key, int x, int y, int width, int height)
+	void updateRectWindow(HWND key, int x, int y, int width, int height)
 	{
 		if (isValidKey(key)) instances[key].setWindowRect(x, y, width, height);
+	}
+
+	void updateImage(HWND key, HWND target, int x, int y)
+	{
+		if (isValidKey(key)) instances[key].updateImage(target, x, y);
 	}
 
 }
