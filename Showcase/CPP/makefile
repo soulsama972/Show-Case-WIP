@@ -1,41 +1,44 @@
-CC = g++
-CFLAGS = -std=c++17 -Wall -c -lgdi32 -g  -lkernel32  -luser32 -m64
-CFLAGS_DEBUG = -std=c++17 -Wall  -g -lgdi32  -lkernel32 -m64
-CFLAGS_DLL = -std=c++17 -Wall -O2 -shared -lgdi32  -lkernel32  -luser32 -m64
-automationPath = src\automation
-UtilsPath = src\utils
-buildPath = src\build
-managerPath = src\manager
-cppWrapperPath = ..\Python\cppWrapper
+CC := g++
+CFLAGS := -std=c++17 -Wall -g -c -lgdi32 -lkernel32  -luser32
+CFLAGS_DEBUG := -std=c++17 -Wall -g -lgdi32  -lkernel32 -luser32
+CFLAGS_DLL := -std=c++17 -Wall -O2 -shared -lgdi32  -lkernel32  -luser32
 
-$(buildPath)\manager.o: $(buildPath)\puzzlePirateAutomation.o $(managerPath)\manager.cpp
-	$(CC) $(managerPath)\manager.cpp $< -o $@ $(CFLAGS) 
+automationPath := src/automation
+UtilsPath := src/utils
+buildPath := ../build
+objPath := ../OBJ
+testPath := src
+cppWrapperPath := ../Python/cppWrapper
+OBJ := utils.o communication.o puzzlePirateAutomation.o manager.o 
+OBJ := $(addprefix $(objPath)/, $(OBJ))
 
-$(buildPath)\puzzlePirateAutomation.o: $(buildPath)\communication.o $(automationPath)\puzzlePirateAutomation.cpp
-	$(CC) $< $(automationPath)\puzzlePirateAutomation.cpp -o $@ $(CFLAGS) 
+vpath %.cpp $(UtilsPath):$(automationPath):$(testPath)
 
-$(buildPath)\communication.o: $(buildPath)\utils.o $(automationPath)\communication.cpp
-	$(CC) $< $(automationPath)\communication.cpp -o $@ $(CFLAGS)
+.PHONY: clean build dll redll rebuild
 
-$(buildPath)\utils.o: $(UtilsPath)\utils.cpp
-	$(CC) $< -o $@ $(CFLAGS) 
+$(objPath)/%.o: %.cpp
+	$(CC) -o $(objPath)/$@ $< $(CFLAGS)
 
-$(buildPath)\test.exe: $(buildPath)\manager.o src\test.cpp
-	$(CC) $(buildPath)\manager.o $(buildPath)\utils.o $(buildPath)\communication.o $(buildPath)\puzzlePirateAutomation.o src\test.cpp -o $(buildPath)\test.exe $(CFLAGS_DEBUG)
+$(buildPath)/test.exe: $(OBJ) test.cpp
+	$(CC) -o $@ $^ $(CFLAGS_DEBUG) 
 
-$(buildPath)\manager.dll: $(buildPath)\puzzlePirateAutomation.o
-	$(CC) $(buildPath)\utils.o $(buildPath)\communication.o $(buildPath)\puzzlePirateAutomation.o $(managerPath)\manager.cpp -o $(cppWrapperPath)\manager.dll $(CFLAGS_DLL)
+$(cppWrapperPath)/manager.dll: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS_DLL) 
 
-dll: $(buildPath)\manager.dll
+build: $(buildPath)/test.exe
+	echo done build debug 
+
+dll: $(cppWrapperPath)/manager.dll
 	echo finish build
-
-debug: $(buildPath)\test.exe
-	echo 1234
 
 clean:
 	cd $(buildPath) && DEL /F/Q/S *.* > NUL
+	cd $(objPath) && DEL /F/Q/S *.* > NUL
 
+redll:
+	$(MAKE) clean 
+	$(MAKE) dll
 
-
-
-# "kernel32.lib" "user32.lib" "gdi32.lib" "winspool.lib" "comdlg32.lib" "advapi32.lib" "shell32.lib" "ole32.lib" "oleaut32.lib" "uuid.lib" "odbc32.lib" "odbccp32.lib"
+rebuild:
+	$(MAKE) clean 
+	$(MAKE) debug

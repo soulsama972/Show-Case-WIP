@@ -1,4 +1,4 @@
-#include"manager/manager.h"
+#include"automation/manager.h"
 
 //bilge pos:  width /2 - 350  height / 2 - 250  size: 270 540
 int main(void)

@@ -1,5 +1,5 @@
 #pragma once
-#include"../automation/puzzlePirateAutomation.h"
+#include"puzzlePirateAutomation.h"
 #define EXPORT extern "C" __declspec(dllexport)
 
 
