@@ -1,8 +1,5 @@
 CC := g++
-CFLAGS := -std=c++17 -Wall -g -c -lgdi32 -lkernel32  -luser32
-CFLAGS_DEBUG := -std=c++17 -Wall -g -lgdi32  -lkernel32 -luser32
-CFLAGS_DLL := -std=c++17 -Wall -O2 -shared -lgdi32  -lkernel32  -luser32
-
+CFLAGS := -std=c++17 -Wall -lgdi32 -lkernel32  -luser32
 automationPath := src/automation
 UtilsPath := src/utils
 buildPath := ../build
@@ -17,19 +14,19 @@ vpath %.cpp $(UtilsPath):$(automationPath):$(testPath)
 .PHONY: clean build dll redll rebuild
 
 $(objPath)/%.o: %.cpp
-	$(CC) -o $(objPath)/$@ $< $(CFLAGS)
+	$(CC) -o $(objPath)/$@ $< -c $(CFLAGS)
 
 $(buildPath)/test.exe: $(OBJ) test.cpp
-	$(CC) -o $@ $^ $(CFLAGS_DEBUG) 
+	$(CC) -o $@ $^ $(CFLAGS) 
 
 $(cppWrapperPath)/manager.dll: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS_DLL) 
+	$(CC) -o $@ $^ $(CFLAGS) 
 
+build: CFLAGS+= -g
 build: $(buildPath)/test.exe
-	echo done build debug 
 
+dll: CFLAGS+= -O2 -shared
 dll: $(cppWrapperPath)/manager.dll
-	echo finish build
 
 clean:
 	cd $(buildPath) && DEL /F/Q/S *.* > NUL
@@ -41,4 +38,4 @@ redll:
 
 rebuild:
 	$(MAKE) clean 
-	$(MAKE) debug
+	$(MAKE) build

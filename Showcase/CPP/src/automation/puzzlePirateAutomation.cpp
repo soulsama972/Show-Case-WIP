@@ -1,7 +1,5 @@
 #include"puzzlePirateAutomation.h"
 
-
-
 PuzzlePirateAutomation::PuzzlePirateAutomation(const std::string& puzzlePath, CreateType type)
 {
     Init(puzzlePath, type);
@@ -73,8 +71,8 @@ void PuzzlePirateAutomation::createAccount(const std::string& outputFile, const 
         Sleep(1000);
     }
 
-    //out << randomUserName << std::endl;
-    //out.close();
+    out << randomUserName << std::endl;
+    out.close();
 }
 
 WindowInfo PuzzlePirateAutomation::openProcess()
