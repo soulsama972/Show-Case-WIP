@@ -2,13 +2,13 @@
 
 PuzzlePirateAutomation::PuzzlePirateAutomation(const std::string& puzzlePath, CreateType type)
 {
-    Init(puzzlePath, type);
+    init(puzzlePath, type);
 }
 
-HWND PuzzlePirateAutomation::Init(const std::string& puzzlePath, CreateType type)
+HWND PuzzlePirateAutomation::init(const std::string& puzzlePath, CreateType type)
 {
     path = puzzlePath;
-    HWND hwnd = Communication::Init(type);
+    HWND hwnd = Communication::init(type);
     static bool once = true;
     if (once)
     {
@@ -94,10 +94,12 @@ WindowInfo PuzzlePirateAutomation::openProcess()
         auto currentDir = std::filesystem::current_path();
         std::filesystem::current_path(path);
 
-        if (!CreateProcessA(NULL, (char*)command.c_str(), NULL, NULL, false, 0, NULL, NULL, &si, &pi))
+        if (!CreateProcessA(NULL, (char*)command.c_str(), NULL, NULL, false, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
             return;
 
         std::filesystem::current_path(path);
+
+        
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
@@ -114,7 +116,6 @@ WindowInfo PuzzlePirateAutomation::openProcess()
     createProcess(path);
 
     wi.prcoessId = getJavaProcId(procIds);
-    wi.attach = false;
     EnumWindows(Utils::getHWND, (LPARAM)&wi);
     return wi;
 

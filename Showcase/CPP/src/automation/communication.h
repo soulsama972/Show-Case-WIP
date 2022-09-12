@@ -30,7 +30,7 @@ public:
         memset(&wi, 0, sizeof(wi));
     }
     
-    HWND Init(CreateType type);
+    HWND init(CreateType type);
 
     inline void sendKeyDown(char keyStroke) const
     {
@@ -89,8 +89,6 @@ public:
     
     void setWindowRect(int x, int y, int width, int height);
 
-    void getMousePos(int& x, int& y);
-
     inline HWND getHWND() const
     {
         return wi.hwnd;
@@ -120,8 +118,6 @@ public:
     void removeTitleBar();
 
     void restoreTitleBar();
-
-    void updateImage(HWND target, int x, int y) const;
 
 protected:
     void updateWindowRect();

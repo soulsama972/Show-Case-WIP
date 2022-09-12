@@ -8,6 +8,11 @@ namespace Manager
 	{
 		return instances.find(key) != instances.end();
 	}
+	
+	void errorMsg()
+	{
+		printf("key is not valid \n");
+	}
 
 	HWND createInstace(const char* puzzlePiratePath, CreateType type)
 	{
@@ -19,87 +24,86 @@ namespace Manager
 
 	void removeInstace(HWND key)
 	{
-		if (isValidKey(key)) instances.erase(key);
+		if(isValidKey(key)) instances.erase(key);
+		else errorMsg();
 	}
 
 	void mouseClick(HWND key, int x, int y, bool rightClick)
 	{
-		if(isValidKey(key)) instances[key].sendMouseClick(x, y, rightClick);
+		isValidKey(key) ? instances[key].sendMouseClick(x, y, rightClick) : errorMsg();
 	}
 	
 	void sendKeyPress(HWND key, char keyStroke)
 	{
-		if (isValidKey(key)) instances[key].sendKeyPress(keyStroke);
+		isValidKey(key) ? instances[key].sendKeyPress(keyStroke) : errorMsg();
 	}
 	
 	void sendKeyDown(HWND key, char keyStroke)
 	{
-		if (isValidKey(key)) instances[key].sendKeyDown(keyStroke);
+		isValidKey(key) ? instances[key].sendKeyDown(keyStroke) : errorMsg();
 	}
 	
 	void sendKeyUp(HWND key, char keyStroke)
 	{
-		if (isValidKey(key)) instances[key].SendKeyUp(keyStroke);
+		isValidKey(key) ? instances[key].SendKeyUp(keyStroke) : errorMsg();
 	}
 	
 	void sendChar(HWND key, char chr)
 	{
-		if (isValidKey(key)) instances[key].sendChar(chr);
+		isValidKey(key) ? instances[key].sendChar(chr) : errorMsg();
 	}
 	
 	void sendString(HWND key, const char* str)
 	{
-		if (isValidKey(key)) instances[key].sendString(std::string(str));
-
+		isValidKey(key) ? instances[key].sendString(std::string(str)) : errorMsg();
 	}
 	
 	void hide(HWND key)
 	{
-		if (isValidKey(key)) instances[key].hide();
+		isValidKey(key) ? instances[key].hide() : errorMsg();
 	}
 	
 	void show(HWND key)
 	{
-		if (isValidKey(key)) instances[key].show();
+		isValidKey(key) ? instances[key].show() : errorMsg();
 	}
 	
 	void killGame(HWND key)
 	{
-		if (isValidKey(key)) instances[key].killGame();
+		isValidKey(key) ? instances[key].killGame() : errorMsg();
 	}
 	
 	void removeTitleBar(HWND key)
 	{
-		if (isValidKey(key)) instances[key].removeTitleBar();
+		isValidKey(key) ? instances[key].removeTitleBar() : errorMsg();
 	}
 	
 	void restoreTitleBar(HWND key)
 	{
-		if (isValidKey(key)) instances[key].restoreTitleBar();
+		isValidKey(key) ? instances[key].restoreTitleBar() : errorMsg();
 	}
 	
 	bool isFullScreen(HWND key)
 	{
-		if (isValidKey(key)) return instances[key].isFullscreen();
-		return false;
+		if (isValidKey(key)) 
+		{
+			return instances[key].isFullscreen();
+		}
+		else
+		{
+			errorMsg();
+			return false;
+		}
 	}
 	
 	void attachToWindow(HWND key, HWND attachTo)
 	{
-		if (isValidKey(key)) instances[key].attachToWindow(attachTo);
+		isValidKey(key) ? instances[key].attachToWindow(attachTo) : errorMsg();
 	}
 	
 	void login(HWND key, const char* userName, const char* password, int pirateNumber)
 	{
-		if (isValidKey(key)) instances[key].login(userName, password, pirateNumber);
-	}
-	
-	bool getMousePos(HWND key, int& x, int& y)
-	{
-		if (!isValidKey(key)) return false;
-
-		instances[key].getMousePos(x, y);
-		return true;
+		isValidKey(key) ? instances[key].login(userName, password, pirateNumber) : errorMsg();
 	}
 	
 	HWND findWindow(const char* str)
@@ -109,12 +113,7 @@ namespace Manager
 
 	void updateRectWindow(HWND key, int x, int y, int width, int height)
 	{
-		if (isValidKey(key)) instances[key].setWindowRect(x, y, width, height);
-	}
-
-	void updateImage(HWND key, HWND target, int x, int y)
-	{
-		if (isValidKey(key)) instances[key].updateImage(target, x, y);
+		isValidKey(key) ? instances[key].setWindowRect(x, y, width, height) : errorMsg();
 	}
 
 }

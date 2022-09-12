@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1154</width>
+    <width>1148</width>
     <height>891</height>
    </rect>
   </property>
@@ -103,9 +103,15 @@
         <item row="0" column="0">
          <layout class="QFormLayout" name="formLayout">
           <property name="horizontalSpacing">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="verticalSpacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>0</number>
           </property>
           <item row="0" column="0" colspan="2">
@@ -117,21 +123,6 @@
             </property>
             <property name="text">
              <string>add bots from config</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="pb_add_bot">
-            <property name="font">
-             <font>
-              <pointsize>11</pointsize>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>add bot</string>
             </property>
            </widget>
           </item>
@@ -175,9 +166,61 @@
               <pointsize>11</pointsize>
              </font>
             </property>
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
            </widget>
           </item>
           <item row="4" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>pirate number</string>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="cb_pirate_id">
+            <item>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>3</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QPushButton" name="pb_add_bot">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>add bot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
            <widget class="QLabel" name="label_5">
             <property name="font">
              <font>
@@ -189,14 +232,14 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="8" column="1">
            <widget class="QComboBox" name="cb_display_bot">
             <property name="toolTip">
              <string>used to tell you which bot currnetly display on the left screen</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="9" column="0">
            <widget class="QPushButton" name="pb_slove_puzzle">
             <property name="font">
              <font>
@@ -208,7 +251,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="9" column="1">
            <widget class="QComboBox" name="cb_slove_puzzle_name">
             <property name="font">
              <font>
@@ -230,7 +273,7 @@
             </item>
            </widget>
           </item>
-          <item row="6" column="0">
+          <item row="10" column="0">
            <widget class="QCheckBox" name="cb_navi_and_slove">
             <property name="font">
              <font>
@@ -245,7 +288,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="10" column="1">
            <widget class="QCheckBox" name="cb_all_bots">
             <property name="font">
              <font>
@@ -260,7 +303,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0">
+          <item row="11" column="0">
            <widget class="QLabel" name="label_3">
             <property name="font">
              <font>
@@ -272,7 +315,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
+          <item row="11" column="1">
            <widget class="QLabel" name="label_pos">
             <property name="text">
              <string/>
@@ -297,6 +340,9 @@
           </property>
           <property name="mouseTracking">
            <bool>true</bool>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::StrongFocus</enum>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>

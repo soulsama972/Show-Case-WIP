@@ -60,7 +60,7 @@ class PuzzlePirateAutomation : public Communication
 public:
     PuzzlePirateAutomation() = default;
     PuzzlePirateAutomation(const std::string& puzzlePath, CreateType type = CREATE_PROCESS);
-    HWND Init(const std::string&, CreateType type = CREATE_PROCESS);
+    HWND init(const std::string&, CreateType type = CREATE_PROCESS);
     void login(const std::string& userName,const std::string& password, int whichPirate = 1) const;
     void createAccount(const std::string& outputFile, const std::string& password) const;
 private:

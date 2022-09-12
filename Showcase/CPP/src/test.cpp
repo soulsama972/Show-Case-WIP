@@ -3,11 +3,13 @@
 //bilge pos:  width /2 - 350  height / 2 - 250  size: 270 540
 int main(void)
 {
-    PuzzlePirateAutomation c;
-    c.Init("C:\\games\\Puzzle Pirates", CreateType::CREATE_PROCESS);
+    PuzzlePirateAutomation c("C:\\games\\Puzzle Pirates", CreateType::CREATE_PROCESS);
 
     //c.login("danielkun2", "Aa123456!", 1);
     //return 0;
+    HWND a = c.getHWND();
+    SetWindowLong(a, GWL_EXSTYLE, GetWindowLong(a, GWL_EXSTYLE) | WS_EX_NOACTIVATE | WS_EX_APPWINDOW);
+
     c.hide();
     Sleep(1000);
     c.show();

@@ -4,6 +4,8 @@
 #include<string>
 #include<algorithm>
 
+#define EXPORT extern "C" __declspec(dllexport)
+
 struct WindowInfo
 {
     DWORD prcoessId;

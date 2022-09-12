@@ -1,7 +1,7 @@
 #include"communication.h"
 
 
-HWND Communication::Init(CreateType type)
+HWND Communication::init(CreateType type)
 {
     if (wi.hwnd) return wi.hwnd;
     
@@ -27,22 +27,10 @@ void Communication::setWindowRect(int x, int y, int width, int height)
     updateWindowRect();
 }
 
-void Communication::getMousePos(int& x, int& y)
-{
-    POINT p;
-    GetCursorPos(&p);
-    x = p.x - left;
-    y = p.y -  top;
-
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-    if (x > width) x = width;
-    if (y > height) y = height;
-}
-
 void Communication::attachToWindow(HWND attachTo)
 {
     SetParent(wi.hwnd, attachTo);
+    SetWindowLong(wi.hwnd, GWL_EXSTYLE, GetWindowLong(wi.hwnd, GWL_EXSTYLE) | WS_EX_NOACTIVATE | WS_EX_APPWINDOW);
     updateWindowRect();
 }
 
@@ -92,19 +80,4 @@ void Communication::updateWindowRect()
     yPading = lStyle & WS_BORDER ? 30 : 0;
 
     updateScreenPoint(msp,left,top, width, height);
-}
-
-void Communication::updateImage(HWND target, int x, int y) const
-{
-
-    HDC hdcSrc = GetDC(wi.hwnd);
-    HDC hdcDst = GetDC(target);
-
-    // This is the best stretch mode.
-    SetStretchBltMode(hdcDst, HALFTONE);
-    StretchBlt(hdcDst, x, y, width, height, hdcSrc, 0, 0, width, height - yPading, SRCCOPY);
-
-    ReleaseDC(wi.hwnd, hdcSrc);
-    ReleaseDC(target, hdcDst);
-
 }
