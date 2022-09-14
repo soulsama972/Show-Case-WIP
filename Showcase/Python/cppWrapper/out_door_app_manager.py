@@ -30,6 +30,16 @@ class WindowHookData(Structure):
         self.middleClick: bool
         self.keys: list
 
+    def is_alt(self) -> bool:
+        return self.keys[0x12]
+
+    def is_ctrl(self) -> bool:
+        return self.keys[0x11]
+    
+    def is_shift(self) -> bool:
+        return self.keys[0x10]
+
+
 
 class OutDoorAppManager:
     def __init__(self, parent_window_title: str = None, manager_dll_path: str = MANAGER_DLL_PATH):
@@ -105,9 +115,6 @@ class OutDoorAppManager:
 
         manager_dll.setHook.argtypes = c_int, c_char_p, POINTER(POINTER(WindowHookData))
         manager_dll.setHook.restype = c_bool
-
-        manager_dll.removeHook.argtypes = None
-        manager_dll.removeHook.restype = None
 
         return manager_dll
 

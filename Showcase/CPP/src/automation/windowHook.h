@@ -12,9 +12,5 @@ struct WindowHookData
     int xPos, yPos;
 };
 
-using _GetWindowData = WindowHookData *(__stdcall *)();
-using _SetHook = bool(__stdcall *)(HWND hwnd, const char* pathToDll, WindowHookData*& winData);
+EXPORT bool setHook(HWND hwnd, const char* pathToDll, WindowHookData*& winData);
 
-
-EXPORT bool setHook(HWND hwnd, const char* pathToDll, WindowHookData *& winData);
-EXPORT void removeHook();

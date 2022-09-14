@@ -1,64 +1,54 @@
 #include"windowHook.h"
 
-HHOOK hKeyboard = 0;
-HHOOK hMouse = 0;
+
+HANDLE hMapFile = 0;
+WindowHookData* wd = 0;
+HMODULE dll_handle = 0;
+const char *szName = "Global\\SMWindowHookData";
+
+using _setHook = bool (*)(HWND hwnd);
 
 bool setHook(HWND hwnd, const char* pathToDll, WindowHookData*& winData)
 {
-    removeHook();
+
+    if(!dll_handle)
+    {
+        dll_handle = LoadLibraryA(pathToDll);
+        if (!dll_handle)
+        {
+            printf("Failed to load lib %s \n", pathToDll);
+            return false;
+        }
+    }
+
+    winData = wd;
+    return ((_setHook)GetProcAddress(dll_handle, "setHook"))(hwnd);
+
     
-    DWORD thread_id = GetWindowThreadProcessId(hwnd,NULL);
-    if(!thread_id)
-    {
-        printf("error getting thread proc id\n");
-        return false;
-    }    
-
-    HMODULE dll_handle = LoadLibraryA(pathToDll);
-    if (!dll_handle)
-    {
-        printf("Failed to load lib %s \n", pathToDll);
-        return false;
-    }
-
-    winData = ((_GetWindowData)GetProcAddress(dll_handle, "getWindowData"))();
-    if(!winData)
-    {
-        printf("Failed to _set Keys! \n");
-        return false;
-    }
-
-    hKeyboard = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)GetProcAddress(dll_handle, "keyBoardCallBack"), dll_handle, thread_id);
-    if (!hKeyboard)
-    {
-        printf("Failed to install keyboard hook! \n");
-        printf("%ld \n",  GetLastError());
-        return false;
-    }
-
-    hMouse = SetWindowsHookEx(WH_MOUSE, (HOOKPROC)GetProcAddress(dll_handle, "mouseCallBack"), dll_handle, thread_id);
-    if (!hMouse)
-    {
-        printf("Failed to install mouse hook! \n");
-        printf("%ld \n",  GetLastError());
-        return false;
-    }
-    
-    return true;
+    return false;
 }
 
-void removeHook()
+
+BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-    if (hKeyboard) 
+    switch (ul_reason_for_call)
     {
-        UnhookWindowsHookEx(hKeyboard);
-        hKeyboard = 0;
-    }
+        case DLL_PROCESS_ATTACH:
+        {
+            hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,sizeof(WindowHookData), szName);
+            if (!hMapFile) printf("Could not create file mapping object (%ld).\n",GetLastError());
+                    
+            wd = (WindowHookData*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS,0,0, 0);
 
-    if (hMouse) 
-    {
-        UnhookWindowsHookEx(hMouse);
-        hMouse = 0;
+            if (!wd)
+            {
+                printf("Could not map view of file (%ld).\n",GetLastError());
+                CloseHandle(hMapFile);
+                return false;
+            }
+            memset(wd, 0, sizeof(WindowHookData));
+        }
+        break;
     }
-
+    return TRUE;
 }

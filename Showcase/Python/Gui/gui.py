@@ -92,11 +92,12 @@ class Ui(QtWidgets.QMainWindow):
 
     def _side_thread(self):
         '''
-        used for getting information
+        used for handling event from target app
         '''
         while self.run:
             if self.appData:
-                print(self.appData.keys[32])
+                print(self.appData.xPos, self.appData.yPos, self.appData.leftClick, self.appData.middleClick, self.appData.rightClick, self.appData.is_alt())
+            #    print(self.appData.keys[32])
             sleep(0.01)
 
 

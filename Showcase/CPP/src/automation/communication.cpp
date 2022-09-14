@@ -30,7 +30,6 @@ void Communication::setWindowRect(int x, int y, int width, int height)
 void Communication::attachToWindow(HWND attachTo)
 {
     SetParent(wi.hwnd, attachTo);
-    SetWindowLong(wi.hwnd, GWL_EXSTYLE, GetWindowLong(wi.hwnd, GWL_EXSTYLE) | WS_EX_NOACTIVATE | WS_EX_APPWINDOW);
     updateWindowRect();
 }
 
