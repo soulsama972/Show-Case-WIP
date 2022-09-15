@@ -4,15 +4,18 @@
 #include<unordered_map>
 #include<filesystem>
 
+#include"windowHook.h"
+#include"../overlay/overlay.h"
 #include"../utils/utils.h"
+
 
 enum CreateType
 {
     CREATE_PROCESS, // used for create puzzle pirate process and attach to it
     ATTACH, // used for attach the first puzzle pirate id found
     BROADCAST // used for sent to all top-level windows in the system
-
 };
+
 
 struct ScreenPoint
 {
@@ -22,15 +25,18 @@ struct ScreenPoint
     int y;
 };
 
-class Communication
+
+class Communication: public Overlay
 {
 public:
+    static WindowHookData whd;
+    
     Communication(): yPading(30), left(0), top(0), width(0), height(0)
     {
         memset(&wi, 0, sizeof(wi));
     }
     
-    HWND init(CreateType type);
+    HWND init(WindowData*& winData, CreateType type);
 
     inline void sendKeyDown(char keyStroke) const
     {
@@ -85,9 +91,12 @@ public:
     inline void show() const
     {
         ShowWindow(wi.hwnd, SW_SHOW);
+        setWindowHook(wi.hwnd);
     }
     
     void setWindowRect(int x, int y, int width, int height);
+    
+    void setWindowHook(HWND hwnd) const;
 
     inline HWND getHWND() const
     {
@@ -121,13 +130,19 @@ public:
 
 protected:
     void updateWindowRect();
-    virtual WindowInfo openProcess() = 0;
-    virtual WindowInfo attachProcess() = 0;
-    virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) = 0;
+    virtual WindowInfo openProcess();
+    virtual WindowInfo attachProcess();
+    virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height);
 
 private:
+    void removeHook() const;
+    static LRESULT __stdcall keyBoardCallBack(int nCode, WPARAM wParam, LPARAM lParam);
+    static LRESULT __stdcall mouseCallBack(int nCode, WPARAM wParam, LPARAM lParam);
+    static LRESULT __stdcall winProcCallBack(int nCode, WPARAM wParam, LPARAM lParam);
+
     std::unordered_map<int, ScreenPoint> msp;
     int yPading;
     int left, top, width, height;
     WindowInfo wi;
+
 };

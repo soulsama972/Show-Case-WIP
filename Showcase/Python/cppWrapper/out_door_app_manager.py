@@ -3,8 +3,6 @@ from enum import IntEnum
 from typing import Any
 
 MANAGER_DLL_PATH = "./cppWrapper/manager.dll"
-WINDOW_HOOK_DLL_PATH = r"G:\projects\Showcase\Showcase\Python\cppWrapper\windowHook.dll"
-
 
 class CreateType(IntEnum):
     CREATE_PROCESS = 0,
@@ -46,11 +44,12 @@ class OutDoorAppManager:
         self.instances: list[int] = list()
         self.manager_dll = self.load_manager_dll(manager_dll_path)
         self._parent_hwnd = self.FindWindow(parent_window_title) if parent_window_title else None
+        self._wd = POINTER(WindowHookData)()
 
     def load_manager_dll(self, manager_dll_path: str) -> CDLL:
         manager_dll = cdll.LoadLibrary(manager_dll_path)
         
-        manager_dll.createInstace.argtypes = c_char_p, c_int
+        manager_dll.createInstace.argtypes = c_char_p, POINTER(POINTER(WindowHookData)), c_int
         manager_dll.createInstace.restype = c_int
         
         manager_dll.removeInstace.argtypes = c_int,
@@ -113,13 +112,16 @@ class OutDoorAppManager:
         manager_dll.show.argtypes = c_int,
         manager_dll.show.restype = None
 
-        manager_dll.setHook.argtypes = c_int, c_char_p, POINTER(POINTER(WindowHookData))
-        manager_dll.setHook.restype = c_bool
+        manager_dll.drawText.argtypes = c_int, c_char_p, c_int, c_int, c_int, c_int
+        manager_dll.drawText.restype = None
+        
+        manager_dll.drawRect.argtypes = c_int, c_int, c_int, c_int, c_int, c_int
+        manager_dll.drawRect.restype = None
 
         return manager_dll
 
-    def create_instance(self, puzzle_pirate_path: str = WINDOW_HOOK_DLL_PATH, type: CreateType = CreateType.BROADCAST) -> int:
-        key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), c_int(type.value))
+    def create_instance(self, puzzle_pirate_path: str, type: CreateType = CreateType.BROADCAST) -> int:
+        key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), byref(self._wd), c_int(type.value))
         self.instances.append(key)
         return key
 
@@ -157,11 +159,6 @@ class OutDoorAppManager:
     def set_parent_hwnd(self, key: int):
         self._parent_hwnd = key
 
-    def set_window_hook(self, key: int, dll_win_hook_path: str = WINDOW_HOOK_DLL_PATH) -> POINTER(WindowHookData):
-        wd = POINTER(WindowHookData)()
-        res = self.manager_dll.setHook(key, dll_win_hook_path.encode("utf-8"), byref(wd))
-        return wd[0] if res else None
-
     def get_parent_hwnd(self) -> int:
         return self._parent_hwnd
 
@@ -183,4 +180,16 @@ class OutDoorAppManager:
     
     def show(self, key: int):
         self.hide_all()
-        self.manager_dll.show(c_int(key))
+        self.manager_dll.show(key)
+
+    def get_window_data(self) -> WindowHookData:
+        return self._wd[0] if self._wd else None
+    
+    def draw_text(self, key: int, text: str, x: int, y: int, color: int, font_size: int = 0):
+        '''
+        if font_size == 0 the function will auto detect the minimum value needed 
+        '''
+        self.manager_dll.drawText(key, text.encode("utf-8"), x, y, color, font_size)
+
+    def draw_rect(self, key:int, x: int, y: int, width: int, height: int, color: int):
+        self.manager_dll.drawRect(key, x, y, width, height, color)

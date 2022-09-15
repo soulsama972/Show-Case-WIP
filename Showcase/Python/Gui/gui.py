@@ -29,7 +29,7 @@ class Ui(QtWidgets.QMainWindow):
 
         self.current_key: int = -1
         self.th: Thread = None
-        self.appData: WindowHookData = None
+        self.winData: WindowHookData = None
         
         self.pb_add_bot.clicked.connect(self._add_bot)
         self.pb_add_bots_from_config.clicked.connect(self._add_bots_from_config)
@@ -39,8 +39,10 @@ class Ui(QtWidgets.QMainWindow):
         self.manager = OutDoorAppManager(self.windowTitle())
 
         self.run = True
-        self.th = Thread(target=self._side_thread, args=())
-        self.th.start()
+        # self.th = Thread(target=self._side_thread, args=())
+        # self.th.start()
+        
+        self._add_bot()
         
     def _update_child_rect_window(self, key: int):
         p = self.label_display.geometry().topLeft()
@@ -52,21 +54,25 @@ class Ui(QtWidgets.QMainWindow):
             self._update_child_rect_window(self.current_key)
         return super().moveEvent(a0)
 
-    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+    def resizeEvent(self, a0: QtGui.QResizeEvent):
         if self.current_key != -1:
             self._update_child_rect_window(self.current_key)
         return super().resizeEvent(a0)
 
-    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+    def closeEvent(self, a0: QtGui.QCloseEvent):
         self.run = False
         self.th.join()
         return super().closeEvent(a0)
 
+    def paintEvent(self, a0: QtGui.QPaintEvent):
+        
+        return super().paintEvent(a0)
+
     def _add_bot(self):
-        key = self.manager.create_instance("C:\\games\\Puzzle Pirates", CreateType.CREATE_PROCESS)
+        
+        key = self.manager.create_instance("C:\\games\\Puzzle Pirates", type=CreateType.CREATE_PROCESS)
         self.manager.remove_title_bar(key)
         self.manager.attachToWindow(key, self.manager.get_parent_hwnd())
-        self.manager.show(key)
         self._update_child_rect_window(key)
         
         length = len(self.manager.instances)
@@ -77,8 +83,8 @@ class Ui(QtWidgets.QMainWindow):
         user_name = self.le_user_name.text()
         password = self.le_password.text()
 
-        self.appData = self.manager.set_window_hook(key)
-        
+        self.winData = self.manager.get_window_data()
+
         if len(user_name) > 0 and len(password) > 0:
             self.manager.login(key, user_name, password, int(self.cb_pirate_id.currentText()))
 
@@ -88,17 +94,40 @@ class Ui(QtWidgets.QMainWindow):
         self.manager.show(self.current_key)
         
     def _add_bots_from_config(self):
-        pass
+        self.manager.draw_text(self.current_key, "hey", 100, 100, 0xffff00)
+        self.manager.draw_rect(self.current_key, 300, 100, 50, 50, 0xffff00)
 
     def _side_thread(self):
         '''
         used for handling event from target app
         '''
+        startX = 0
+        startY = 0
+        endX = 0
+        endY = 0
+        capture = False
+        can_draw = False
+        save_rects = list()
         while self.run:
-            if self.appData:
-                print(self.appData.xPos, self.appData.yPos, self.appData.leftClick, self.appData.middleClick, self.appData.rightClick, self.appData.is_alt())
+            if self.winData:
+            #    print(self.winData.xPos, self.winData.yPos, self.winData.leftClick, self.winData.middleClick, self.winData.rightClick, self.winData.is_alt())
             #    print(self.appData.keys[32])
-            sleep(0.01)
+                if self.winData.leftClick and not capture:
+                    startX = self.winData.xPos
+                    startY = self.winData.yPos
+                    capture = True
+                
+                if not self.winData.leftClick and capture:
+                    save_rects.append([startX, startY, self.winData.xPos, self.winData.yPos])
+                    capture = False
+
+                if capture:
+                    self.manager.draw_rect(self.current_key, startX, startY, self.winData.xPos, self.winData.yPos, 0xffff00)
+                
+                for rect in save_rects:
+                    self.manager.draw_rect(self.current_key,rect[0], rect[1], rect[2], rect[3], 0xffff00)
+            sleep(0.5)
+
 
 
 def run_gui():

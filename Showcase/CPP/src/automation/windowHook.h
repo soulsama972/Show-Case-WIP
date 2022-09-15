@@ -1,9 +1,18 @@
 #pragma once
-#include"../utils/utils.h"
+#include<windows.h>
 
-/* this file used for hooking the target application for infomation like keyboard mouse etc..*/
+#define WINDATASMNAME "Global\\SMWindowData"
 
-struct WindowHookData
+constexpr int winHookCount = 3; // size = type of hook
+
+enum WinHookType
+{
+    KEYBOARD,
+    MOUSE,
+    WINPROC
+};
+
+struct WindowData /* used for hooking the target application for infomation like keyboard mouse etc..*/
 {
     bool keys[256];
     bool leftClick;
@@ -12,5 +21,13 @@ struct WindowHookData
     int xPos, yPos;
 };
 
-EXPORT bool setHook(HWND hwnd, const char* pathToDll, WindowHookData*& winData);
 
+struct WindowHookData
+{
+    HHOOK hList[winHookCount];
+    HINSTANCE instance;
+    HWND target;
+    HANDLE hMapFile;
+    WindowData *wd;
+    RECT screenRect;
+};

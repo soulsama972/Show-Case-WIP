@@ -1,5 +1,6 @@
 #pragma once
 #include"communication.h"
+#include"manager.h"
 #include<fstream>
 
 enum NamedPoint
@@ -59,8 +60,8 @@ class PuzzlePirateAutomation : public Communication
 {
 public:
     PuzzlePirateAutomation() = default;
-    PuzzlePirateAutomation(const std::string& puzzlePath, CreateType type = CREATE_PROCESS);
-    HWND init(const std::string&, CreateType type = CREATE_PROCESS);
+    PuzzlePirateAutomation(const std::string& puzzlePath, WindowData*& winData, CreateType type = CREATE_PROCESS);
+    HWND init(const std::string& puzzlePath, WindowData*& winData, CreateType type = CREATE_PROCESS);
     void login(const std::string& userName,const std::string& password, int whichPirate = 1) const;
     void createAccount(const std::string& outputFile, const std::string& password) const;
 private:
@@ -71,3 +72,8 @@ private:
     std::string path;
 };
 
+namespace Manager
+{
+    EXPORT HWND createInstace(const char* puzzlePath, WindowData*& winData, CreateType type);
+    EXPORT void login(HWND key, const char* userName, const char* password, int pirateNumber);
+}

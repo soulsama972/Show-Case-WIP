@@ -32,6 +32,14 @@ namespace Utils
         std::generate_n(str.begin() + 1, length - 1, randchar);
         return str;
     }
+    void printMsg(const char* str, ...)
+    {
+        #ifdef DEBUG
+        va_list p;
+        va_start(p,str);
+        vprintf(str, p);
+        #endif
+    }
 
 
 }

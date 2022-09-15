@@ -2,7 +2,7 @@
 
 namespace Manager
 {
-	std::unordered_map<HWND, PuzzlePirateAutomation> instances;
+	std::unordered_map<HWND, Communication> instances;
 
 	bool isValidKey(HWND key)
 	{
@@ -11,15 +11,17 @@ namespace Manager
 	
 	void errorMsg()
 	{
-		printf("key is not valid \n");
+		Utils::printMsg("key is not valid \n");
 	}
 
-	HWND createInstace(const char* puzzlePiratePath, CreateType type)
+	void AddInstance(HWND key, Communication value)
 	{
-		PuzzlePirateAutomation inst(std::string(puzzlePiratePath), type);
-		HWND key = inst.getHWND();
-		instances[key] = inst;
-		return key;
+		instances[key] = value;
+	}
+
+	Communication * getInstance(HWND key)
+	{
+		return isValidKey(key) ? &instances[key] : 0;
 	}
 
 	void removeInstace(HWND key)
@@ -101,11 +103,6 @@ namespace Manager
 		isValidKey(key) ? instances[key].attachToWindow(attachTo) : errorMsg();
 	}
 	
-	void login(HWND key, const char* userName, const char* password, int pirateNumber)
-	{
-		isValidKey(key) ? instances[key].login(userName, password, pirateNumber) : errorMsg();
-	}
-	
 	HWND findWindow(const char* str)
 	{
 		return FindWindowA(0, str);
@@ -116,4 +113,43 @@ namespace Manager
 		isValidKey(key) ? instances[key].setWindowRect(x, y, width, height) : errorMsg();
 	}
 
+	void drawText(HWND key, const char* text,int x, int y, int color,int fontSize)
+	{
+		isValidKey(key) ? instances[key].drawText(key, std::string(text), x, y, color, fontSize) : errorMsg();
+	}
+
+	void drawRect(HWND key, int x, int y, int w, int h, int color)
+	{
+		isValidKey(key) ? instances[key].drawRect(key, x, y, w, h, color) : errorMsg();
+	}
+
+}
+
+BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+	WindowHookData* whd = &Communication::whd;
+    switch (ul_reason_for_call)
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+			// AllocConsole();
+			// freopen("CONOUT$", "w", stdout);
+			whd->instance = (HMODULE)hModule;
+			srand((unsigned)time(NULL));
+
+            whd->hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE, 0, sizeof(WindowData), WINDATASMNAME);
+			if (!whd->hMapFile) Utils::printMsg("Could not create file mapping object (%ld).\n",GetLastError());
+                    
+            whd->wd = (WindowData*)MapViewOfFile(whd->hMapFile, FILE_MAP_ALL_ACCESS,0,0, 0);
+            if (!whd->wd)
+            {
+                Utils::printMsg("Could not map view of file (%ld).\n",GetLastError());
+                CloseHandle(whd->hMapFile);
+                return false;
+            }
+            memset(whd->wd, 0, sizeof(WindowData));
+        }
+        break;
+    }
+    return TRUE;
 }

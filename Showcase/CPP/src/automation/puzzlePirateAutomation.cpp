@@ -1,21 +1,14 @@
 #include"puzzlePirateAutomation.h"
 
-PuzzlePirateAutomation::PuzzlePirateAutomation(const std::string& puzzlePath, CreateType type)
+PuzzlePirateAutomation::PuzzlePirateAutomation(const std::string& puzzlePath, WindowData*& winData, CreateType type)
 {
-    init(puzzlePath, type);
+    init(puzzlePath, winData, type);
 }
 
-HWND PuzzlePirateAutomation::init(const std::string& puzzlePath, CreateType type)
+HWND PuzzlePirateAutomation::init(const std::string& puzzlePath, WindowData*& winData, CreateType type)
 {
     path = puzzlePath;
-    HWND hwnd = Communication::init(type);
-    static bool once = true;
-    if (once)
-    {
-        srand((unsigned)time(NULL));
-        once = false;
-    }
-    return hwnd;
+    return Communication::init(winData, type);
 }
 
 void PuzzlePirateAutomation::login(const std::string& userName, const std::string& password, int whichPirate) const
@@ -191,3 +184,21 @@ DWORD PuzzlePirateAutomation::getJavaProcId(const std::unordered_map<DWORD, bool
     return 0;
 }
 
+
+namespace Manager
+{
+    HWND createInstace(const char* puzzlePath, WindowData*& winData, CreateType type)
+    {
+        PuzzlePirateAutomation inst(std::string(puzzlePath), winData, type);
+        HWND key = inst.getHWND();
+        AddInstance(key, inst);
+        return key;
+    }
+
+    void login(HWND key, const char* userName, const char* password, int pirateNumber)
+    {
+        auto instance = reinterpret_cast<PuzzlePirateAutomation*>(getInstance(key));
+        if(instance) instance->login(userName, password, pirateNumber);
+
+    }
+}

@@ -1,43 +1,44 @@
 CC := g++
 CFLAGS := -std=c++17 -Wall -Wl,--add-stdcall-alias -lgdi32 -lkernel32  -luser32
+EXTRAFLAGS = -g -DDEBUG
+
 automationPath := src/automation
 UtilsPath := src/utils
+overlayPath := src/overlay
 buildPath := ../build
 objPath := ../OBJ
 testPath := src
 cppWrapperPath := ../Python/cppWrapper
-OBJ := utils.o communication.o puzzlePirateAutomation.o windowHook.o manager.o
+OBJ := utils.o communication.o puzzlePirateAutomation.o manager.o overlay.o
 OBJ := $(addprefix $(objPath)/, $(OBJ))
 
-vpath %.cpp $(UtilsPath):$(automationPath):$(testPath)
+vpath %.cpp $(UtilsPath):$(automationPath):$(testPath):$(overlayPath)
+vpath %.h   $(UtilsPath):$(automationPath):$(testPath):$(overlayPath)
 
-.PHONY: clean build dll redll rebuild run build32 rebuild32
+.PHONY: clean build rebuild build32 rebuild32 dll redll dll32 redll32 dbgdll32 run
 
-$(objPath)/%.o: %.cpp
-	$(CC) -o $(objPath)/$@ $< -c $(CFLAGS)
+$(objPath)/%.o: %.cpp %.h
+	$(CC) -o $(objPath)/$@ $< -c $(CFLAGS) $(EXTRAFLAGS)
 
 $(buildPath)/test.exe: $(OBJ) test.cpp
-	$(CC) -o $@ $^ $(CFLAGS) 
+	$(CC) -o $@ $^ $(CFLAGS) $(EXTRAFLAGS)
 
 $(cppWrapperPath)/manager.dll: $(OBJ)
-	$(CC) -o $@ $^ -shared $(CFLAGS) 
+	$(CC) -o $@ $^ -shared $(CFLAGS) $(EXTRAFLAGS)
 
-$(cppWrapperPath)/windowHook.dll: $(objPath)/windowHookDLL.o
-	$(CC) -o $@ $^ -shared $(CFLAGS)
-
-build: CFLAGS+= -g
-build: $(buildPath)/test.exe $(cppWrapperPath)/windowHook.dll
-
-build32: CFLAGS+= -g
-build32: CC := g++32
-build32: $(buildPath)/test.exe $(cppWrapperPath)/windowHook.dll
 
 run: $(buildPath)/test.exe
 	$<
 
-dll: CC:= g++32
-dll: CFLAGS+= -O2
-dll: $(cppWrapperPath)/manager.dll $(cppWrapperPath)/windowHook.dll
+build: $(buildPath)/test.exe
+
+dll: $(cppWrapperPath)/manager.dll
+
+build32: CC := g++32
+build32: build
+
+dll32: CC:= g++32
+dll32: dll
 
 clean:
 	cd $(buildPath) && DEL /F/Q/S *.* > NUL
@@ -47,10 +48,10 @@ redll:
 	$(MAKE) clean 
 	$(MAKE) dll
 
+redll32:
+	$(MAKE) clean 
+	$(MAKE) dll32
+
 rebuild:
 	$(MAKE) clean 
 	$(MAKE) build
-
-rebuild32:
-	$(MAKE) clean 
-	$(MAKE) build32

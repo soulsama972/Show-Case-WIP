@@ -16,6 +16,7 @@ struct WindowInfo
 namespace Utils
 {
 	BOOL CALLBACK getHWND(HWND hwnd, LPARAM lParam);
+    void printMsg(const char* str, ...);
     std::string genreateString(int length);
 }
 
