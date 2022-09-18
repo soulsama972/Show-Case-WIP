@@ -1,4 +1,4 @@
-from cppWrapper.out_door_app_manager import OutDoorAppManager
+from cppWrapper.app_manager import AppManager
 from Gui.gui import run_gui
 
 

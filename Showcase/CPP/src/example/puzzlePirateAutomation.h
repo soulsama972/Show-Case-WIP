@@ -1,6 +1,8 @@
 #pragma once
-#include"communication.h"
-#include"manager.h"
+#include"../overlay/overlay.h"
+#include"../automation/communication.h"
+#include"../automation/manager.h"
+#include<TlHelp32.h>
 #include<fstream>
 
 enum NamedPoint
@@ -68,6 +70,8 @@ private:
     WindowInfo openProcess() override;
     WindowInfo attachProcess() override;
     void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) override;
+
+
     DWORD getJavaProcId(const std::unordered_map<DWORD, bool>& ignoreProcList) const;
     std::string path;
 };

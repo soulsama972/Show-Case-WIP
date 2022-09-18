@@ -40,6 +40,4 @@ namespace Utils
         vprintf(str, p);
         #endif
     }
-
-
 }

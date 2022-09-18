@@ -2,7 +2,7 @@ import sys
 from time import sleep
 from PyQt5 import QtWidgets, uic, QtGui
 
-from cppWrapper.out_door_app_manager import CreateType, OutDoorAppManager, WindowHookData
+from cppWrapper.app_manager import CreateType, AppManager, WindowHookData
 from threading import Thread
 
 
@@ -36,13 +36,15 @@ class Ui(QtWidgets.QMainWindow):
         self.cb_display_bot.currentTextChanged.connect(self._change_current_instance)
 
         self.show()  # make sure to call this before manager because we cant find the window id without it showing first
-        self.manager = OutDoorAppManager(self.windowTitle())
+        self.manager = AppManager(self.windowTitle())
+
+        self._add_bot()
+        self._add_bots_from_config()
 
         self.run = True
-        # self.th = Thread(target=self._side_thread, args=())
-        # self.th.start()
-        
-        self._add_bot()
+        self.th = Thread(target=self._side_thread, args=())
+        self.th.start()
+
         
     def _update_child_rect_window(self, key: int):
         p = self.label_display.geometry().topLeft()
@@ -62,11 +64,8 @@ class Ui(QtWidgets.QMainWindow):
     def closeEvent(self, a0: QtGui.QCloseEvent):
         self.run = False
         self.th.join()
+        self.manager.clean_up()
         return super().closeEvent(a0)
-
-    def paintEvent(self, a0: QtGui.QPaintEvent):
-        
-        return super().paintEvent(a0)
 
     def _add_bot(self):
         
@@ -94,8 +93,9 @@ class Ui(QtWidgets.QMainWindow):
         self.manager.show(self.current_key)
         
     def _add_bots_from_config(self):
-        self.manager.draw_text(self.current_key, "hey", 100, 100, 0xffff00)
-        self.manager.draw_rect(self.current_key, 300, 100, 50, 50, 0xffff00)
+        self.manager.draw_text("hey", 100, 100, 0xffff00)
+        self.manager.draw_rect(0, 0, 50, 50, 0xffff00, True)
+        self.manager.present()
 
     def _side_thread(self):
         '''
@@ -103,11 +103,11 @@ class Ui(QtWidgets.QMainWindow):
         '''
         startX = 0
         startY = 0
-        endX = 0
-        endY = 0
         capture = False
-        can_draw = False
         save_rects = list()
+
+        for y in range(60):
+                save_rects.append([y * 10 , y * 5, 700, 700])        
         while self.run:
             if self.winData:
             #    print(self.winData.xPos, self.winData.yPos, self.winData.leftClick, self.winData.middleClick, self.winData.rightClick, self.winData.is_alt())
@@ -122,11 +122,14 @@ class Ui(QtWidgets.QMainWindow):
                     capture = False
 
                 if capture:
-                    self.manager.draw_rect(self.current_key, startX, startY, self.winData.xPos, self.winData.yPos, 0xffff00)
+                    self.manager.draw_rect(startX, startY, self.winData.xPos, self.winData.yPos, 0xffff00, True)
                 
                 for rect in save_rects:
-                    self.manager.draw_rect(self.current_key,rect[0], rect[1], rect[2], rect[3], 0xffff00)
-            sleep(0.5)
+                    self.manager.draw_rect(rect[0], rect[1], rect[2], rect[3], 0xffff00, True)
+
+                self.manager.present()
+            
+            #sleep(0.1)
 
 
 

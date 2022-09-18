@@ -1,31 +1,38 @@
 #pragma once
 #include"../utils/utils.h"
 #include<thread>
-
+#include<vector>
 
 
 #define REGISTERCLASSNAME "overlayClass"
 
-class Overlay
+struct OverlayRect
 {
-public:
-    Overlay() = default;
-    inline void setOverlayTargetWin(HWND hwnd) const {overlayTargetWin = hwnd;}
-    inline HWND getOverlayHWND() const {return overlayHwnd;}
-    inline void present() const {SendMessageA(overlayHwnd, WM_PAINT, 0,0);}
+    int x, y, width, height, color;
+    bool onlyFrame; // true if to draw only the border false the all rect
+};
 
-    static void init(HINSTANCE hInstance);
-    void updateWindowRect(int x, int y, int w, int h) const;
-    void addText(const std::string& text,int x, int y, int color, int fontSize) const;
-    void addRect(int x, int y, int w, int h, int color) const;
-    void drawRect(HWND key, int x, int y, int w, int h, int color) const;
-    void drawText(HWND key, const std::string& text,int x, int y, int color, int fontSize) const;
+struct OverlayText
+{
+    std::string text;
+    int x, y, color, fontSize;
+};
 
-private:
-    static HWND overlayTargetWin;
-    static HWND overlayHwnd;
-    static std::thread th;
-    static void run(HINSTANCE hInstance);
-    static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+namespace Overlay
+{
+
+    void init(HINSTANCE hInstance);
+    void cleanUp();
+    void updateWindowRect(int x, int y, int width, int height);
+    
+    EXPORT void drawText(const char* text,int x, int y, int color, int fontSize);
+    EXPORT void drawRect(int x, int y, int width, int height, int color, bool onlyFrame);
+
+    void drawRect(HDC hdc, const OverlayRect& oRect);
+    void drawText(HDC hdc, const OverlayText& oText);
+    
+    void draw(HDC hdc);
+    EXPORT void present();
 };
 

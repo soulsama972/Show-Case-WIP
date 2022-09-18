@@ -1,6 +1,4 @@
 #pragma once
-#include<windows.h>
-#include<TlHelp32.h>
 #include<unordered_map>
 #include<filesystem>
 
@@ -26,9 +24,11 @@ struct ScreenPoint
 };
 
 
-class Communication: public Overlay
+class Communication
 {
 public:
+    virtual ~Communication()  {}
+
     static WindowHookData whd;
     
     Communication(): yPading(30), left(0), top(0), width(0), height(0)
@@ -62,8 +62,7 @@ public:
 
     inline void sendString(const std::string& str) const
     {
-        for (auto& ch : str)
-            sendChar(ch);
+        for (auto& ch : str) sendChar(ch);
     }
     
     inline void sendMouseClick(int x, int y, bool RightClick = false) const
@@ -103,19 +102,15 @@ public:
         return wi.hwnd;
     }
     
-    inline void setHWND(HWND hwnd)
-    {
-        wi.hwnd = hwnd;
-    }
-
     inline void setFocus() const
     {
        SetFocus(wi.hwnd);
     }
 
-    inline void killGame()const
+    inline void removeInstance()const
     {
         HANDLE h = OpenProcess(PROCESS_ALL_ACCESS, false, wi.prcoessId);
+        if(!h) return;
         TerminateProcess(h, 0);
         CloseHandle(h);
     }
@@ -130,9 +125,9 @@ public:
 
 protected:
     void updateWindowRect();
-    virtual WindowInfo openProcess();
-    virtual WindowInfo attachProcess();
-    virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height);
+    virtual WindowInfo openProcess() = 0;
+    virtual WindowInfo attachProcess() = 0;
+    virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) = 0;
 
 private:
     void removeHook() const;

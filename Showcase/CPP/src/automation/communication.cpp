@@ -22,8 +22,6 @@ HWND Communication::init(WindowData*& winData, CreateType type)
     winData = whd.wd;
     
     setWindowHook(wi.hwnd);
-    std::thread  th(Overlay::init,whd.instance);
-    th.join();
     
     return wi.hwnd;
 }
@@ -66,7 +64,6 @@ void Communication::setWindowHook(HWND hwnd) const
 
 void Communication::attachToWindow(HWND attachTo)
 {
-    setOverlayTargetWin(wi.hwnd);
     SetParent(wi.hwnd, attachTo);
     updateWindowRect();
 }
@@ -90,7 +87,7 @@ void Communication::removeTitleBar()
 {
     yPading = 0;
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
-    lStyle &= ~(WS_BORDER);
+    lStyle &= ~(WS_BORDER | WS_DLGFRAME);
     SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
     updateWindowRect();
 }
@@ -99,7 +96,7 @@ void Communication::restoreTitleBar()
 {
     yPading = 30;
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
-    lStyle |= (WS_BORDER);
+    lStyle |= (WS_BORDER | WS_DLGFRAME);
     SetWindowLong(wi.hwnd, GWL_STYLE, lStyle);
     updateWindowRect();
 }
@@ -108,6 +105,7 @@ void Communication::updateWindowRect()
 {
     RECT screenRect;
     GetWindowRect(wi.hwnd, &screenRect);
+
     left = screenRect.left;
     top = screenRect.top;
     width = screenRect.right - screenRect.left;
@@ -115,15 +113,9 @@ void Communication::updateWindowRect()
 
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
     yPading = lStyle & WS_BORDER ? 30 : 0;
-    Overlay::updateWindowRect(left,top, width, height);
+
     updateScreenPoint(msp,left,top, width, height);
 }
-
-WindowInfo Communication::openProcess() { return {0};}
-
-WindowInfo Communication::attachProcess() {return {0};}
-
-void Communication::updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) {}
 
 LRESULT __stdcall Communication::keyBoardCallBack(int nCode, WPARAM wParam, LPARAM lParam)
 {

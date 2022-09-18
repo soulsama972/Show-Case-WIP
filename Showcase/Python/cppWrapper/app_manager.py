@@ -39,16 +39,24 @@ class WindowHookData(Structure):
 
 
 
-class OutDoorAppManager:
+class AppManager:
     def __init__(self, parent_window_title: str = None, manager_dll_path: str = MANAGER_DLL_PATH):
         self.instances: list[int] = list()
         self.manager_dll = self.load_manager_dll(manager_dll_path)
         self._parent_hwnd = self.FindWindow(parent_window_title) if parent_window_title else None
         self._wd = POINTER(WindowHookData)()
 
+        self.init()
+
     def load_manager_dll(self, manager_dll_path: str) -> CDLL:
         manager_dll = cdll.LoadLibrary(manager_dll_path)
         
+        manager_dll.init.argtypes = None
+        manager_dll.init.restype = None
+
+        manager_dll.cleanUp.argtypes = None
+        manager_dll.cleanUp.restype = None
+
         manager_dll.createInstace.argtypes = c_char_p, POINTER(POINTER(WindowHookData)), c_int
         manager_dll.createInstace.restype = c_int
         
@@ -79,9 +87,6 @@ class OutDoorAppManager:
         manager_dll.show.argtypes = c_int,
         manager_dll.show.restype = None
 
-        manager_dll.killGame.argtypes = c_int,
-        manager_dll.killGame.restype = None
-
         manager_dll.removeTitleBar.argtypes = c_int,
         manager_dll.removeTitleBar.restype = None
 
@@ -106,19 +111,22 @@ class OutDoorAppManager:
         manager_dll.updateRectWindow.argtypes = c_int, c_int, c_int
         manager_dll.updateRectWindow.restype = None
 
-        manager_dll.hide.argtypes = c_int,
-        manager_dll.hide.restype = None
-
-        manager_dll.show.argtypes = c_int,
-        manager_dll.show.restype = None
-
-        manager_dll.drawText.argtypes = c_int, c_char_p, c_int, c_int, c_int, c_int
+        manager_dll.drawText.argtypes = c_char_p, c_int, c_int, c_int, c_int
         manager_dll.drawText.restype = None
         
-        manager_dll.drawRect.argtypes = c_int, c_int, c_int, c_int, c_int, c_int
+        manager_dll.drawRect.argtypes = c_int, c_int, c_int, c_int, c_int, c_bool
         manager_dll.drawRect.restype = None
 
+        manager_dll.present.argtypes = None
+        manager_dll.present.restype = None
+
         return manager_dll
+
+    def init(self):
+        self.manager_dll.init()
+
+    def clean_up(self):
+        self.manager_dll.cleanUp()
 
     def create_instance(self, puzzle_pirate_path: str, type: CreateType = CreateType.BROADCAST) -> int:
         key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), byref(self._wd), c_int(type.value))
@@ -185,11 +193,17 @@ class OutDoorAppManager:
     def get_window_data(self) -> WindowHookData:
         return self._wd[0] if self._wd else None
     
-    def draw_text(self, key: int, text: str, x: int, y: int, color: int, font_size: int = 0):
+    def draw_text(self, text: str, x: int, y: int, color: int, font_size: int = 0):
         '''
         if font_size == 0 the function will auto detect the minimum value needed 
         '''
-        self.manager_dll.drawText(key, text.encode("utf-8"), x, y, color, font_size)
+        self.manager_dll.drawText(text.encode("utf-8"), x, y, color, font_size)
 
-    def draw_rect(self, key:int, x: int, y: int, width: int, height: int, color: int):
-        self.manager_dll.drawRect(key, x, y, width, height, color)
+    def draw_rect(self, x: int, y: int, width: int, height: int, color: int, only_frame: bool):
+        self.manager_dll.drawRect(x, y, width, height, color, only_frame)
+
+    def present(self):
+        '''
+        drawing all object that was added before the previus call
+        '''
+        self.manager_dll.present()
