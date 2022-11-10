@@ -1,7 +1,14 @@
 # show-case-WIP
 ## Description
 
-automate tool with a graphic interface that use windows internal function.
+automate tool with a graphic interface that use windows internal functions.
+you can use the tool for automations, running models, and perform complex task.
+exmples: 
+* mouse clicking (a list of points on the app that you saved using the gui interface to perform a task.
+* wating for event to happen than do something.
+* keylogger (save the key press from your appliaction of your choosing).
+* auto logging etc.
+
 - [x] attach/launch a process.
 - [x] virtual keyboard/mouse.
 - [x] esay opening and managing multi processing (same process/application).
