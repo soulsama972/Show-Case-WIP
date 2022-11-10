@@ -1,7 +1,7 @@
 # show-case-WIP
 ## Description
 
-# automate tool with a graphic interface that use windows internal function.
+automate tool with a graphic interface that use windows internal function.
 - [x] attach/launch a process.
 - [x] virtual keyboard/mouse.
 - [x] esay opening and managing multi processing (same process/application).
