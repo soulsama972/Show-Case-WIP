@@ -71,8 +71,8 @@ class Ui(QtWidgets.QMainWindow):
     def _add_bot(self):
         
         key = self.manager.create_instance("C:\\games\\Puzzle Pirates", type=CreateType.CREATE_PROCESS)
-        # self.manager.remove_title_bar(key)
-        # self.manager.attachToWindow(key, self.manager.get_parent_hwnd())
+        self.manager.remove_title_bar(key)
+        self.manager.attach_to_window(key, self.manager.get_parent_hwnd())
         self._update_child_rect_window(key)
         
         length = len(self.manager.instances)
@@ -108,9 +108,7 @@ class Ui(QtWidgets.QMainWindow):
         startY = 0
         capture = False
         save_rects = list()
-
-        for y in range(60):
-                save_rects.append([y * 10 , y * 5, 700, 700])        
+       
         while self.run:
             if self.winData:
             #    print(self.winData.xPos, self.winData.yPos, self.winData.leftClick, self.winData.middleClick, self.winData.rightClick, self.winData.is_alt())
@@ -132,8 +130,15 @@ class Ui(QtWidgets.QMainWindow):
 
                 self.label_pos.setText(f"{self.winData.xPos},{self.winData.yPos}")
 
+
+                self.manager.draw_text("ShowCase", 50, 100, 0xffff00, 30)
                 self.manager.present()
             
+
+
+            if self.winData.is_key_press(ord('Z')):
+                save_rects = save_rects[:-1]
+
             sleep(0.01)
 
 

@@ -202,7 +202,7 @@ class AppManager:
     def login(self, key: int, user_name: str, password: str, pirate_number: int):
         return self.manager_dll.login(key, user_name.encode("utf-8"), password.encode("utf-8"), pirate_number)
 
-    def attachToWindow(self, from_key: int, to_key: int):
+    def attach_to_window(self, from_key: int, to_key: int):
         self.manager_dll.attachToWindow(from_key, to_key)
 
     def hide_all(self):
