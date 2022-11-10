@@ -2,8 +2,8 @@
 #include<unordered_map>
 #include<filesystem>
 
-#include"windowHook.h"
 #include"../overlay/overlay.h"
+#include"../hooks/windowHook.h"
 #include"../utils/utils.h"
 
 
@@ -29,14 +29,24 @@ class Communication
 public:
     virtual ~Communication()  {}
 
-    static WindowHookData whd;
-    
     Communication(): yPading(30), left(0), top(0), width(0), height(0)
     {
         memset(&wi, 0, sizeof(wi));
     }
     
     HWND init(WindowData*& winData, CreateType type);
+
+    void setWindowRect(int x, int y, int width, int height);
+
+    void attachToWindow(HWND attachTo);
+
+    bool isFullscreen() const;
+
+    void removeTitleBar();
+
+    void restoreTitleBar();
+
+    void blockInputCommunication() const;
 
     inline void sendKeyDown(char keyStroke) const
     {
@@ -90,13 +100,9 @@ public:
     inline void show() const
     {
         ShowWindow(wi.hwnd, SW_SHOW);
-        setWindowHook(wi.hwnd);
+        WindowHook::setWindowHook(wi.hwnd);
     }
     
-    void setWindowRect(int x, int y, int width, int height);
-    
-    void setWindowHook(HWND hwnd) const;
-
     inline HWND getHWND() const
     {
         return wi.hwnd;
@@ -115,14 +121,6 @@ public:
         CloseHandle(h);
     }
 
-    void attachToWindow(HWND attachTo);
-
-    bool isFullscreen() const;
-
-    void removeTitleBar();
-
-    void restoreTitleBar();
-
 protected:
     void updateWindowRect();
     virtual WindowInfo openProcess() = 0;
@@ -130,11 +128,6 @@ protected:
     virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) = 0;
 
 private:
-    void removeHook() const;
-    static LRESULT __stdcall keyBoardCallBack(int nCode, WPARAM wParam, LPARAM lParam);
-    static LRESULT __stdcall mouseCallBack(int nCode, WPARAM wParam, LPARAM lParam);
-    static LRESULT __stdcall winProcCallBack(int nCode, WPARAM wParam, LPARAM lParam);
-
     std::unordered_map<int, ScreenPoint> msp;
     int yPading;
     int left, top, width, height;

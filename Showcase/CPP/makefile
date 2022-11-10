@@ -3,6 +3,7 @@ CFLAGS := -std=c++17 -Wall -Wl,--add-stdcall-alias -lgdi32 -lkernel32  -luser32
 EXTRAFLAGS = -g -DDEBUG
 
 automationPath := src/automation
+hooksPath := src/hooks
 utilsPath := src/utils
 overlayPath := src/overlay
 buildPath := ../build
@@ -12,11 +13,11 @@ cppWrapperPath := ../Python/cppWrapper
 examplePath := src/example
 
 
-OBJ := utils.o communication.o puzzlePirateAutomation.o manager.o overlay.o
+OBJ := utils.o communication.o puzzlePirateAutomation.o manager.o overlay.o windowHook.o
 OBJ := $(addprefix $(objPath)/, $(OBJ))
 
-vpath %.cpp $(utilsPath):$(automationPath):$(testPath):$(overlayPath):$(examplePath)
-vpath %.h   $(utilsPath):$(automationPath):$(testPath):$(overlayPath):$(examplePath)
+vpath %.cpp $(utilsPath):$(automationPath):$(testPath):$(overlayPath):$(examplePath):$(hooksPath)
+vpath %.h   $(utilsPath):$(automationPath):$(testPath):$(overlayPath):$(examplePath):$(hooksPath)
 
 .PHONY: clean build rebuild build32 rebuild32 dll redll dll32 redll32 dbgdll32 run
 

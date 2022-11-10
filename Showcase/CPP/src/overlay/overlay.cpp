@@ -1,5 +1,7 @@
 #include"overlay.h"
 
+
+
 namespace Overlay
 {
     std::vector<OverlayRect> overlayRect;
@@ -65,10 +67,15 @@ namespace Overlay
         ShowWindow(overlayHwnd, SW_SHOW);
 
         MSG msg;
+
+        SetTimer(overlayHwnd, 0, 1, NULL);
+
         while (GetMessageA(&msg, overlayHwnd, 0, 0) && !isDone)
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            
         }
     }
 
@@ -164,6 +171,10 @@ namespace Overlay
             screenHeight = HIWORD(lParam);
         }
         break;
+        case WM_TIMER:
+        {
+            updateWindowRect(whd.wd->screenRect.left, whd.wd->screenRect.top, whd.wd->screenRect.right - whd.wd->screenRect.left, whd.wd->screenRect.bottom - whd.wd->screenRect.top);
+        }break;
         default:
             return DefWindowProc(hwnd, message, wParam, lParam);
         }

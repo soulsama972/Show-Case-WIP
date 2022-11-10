@@ -125,8 +125,6 @@ WindowInfo PuzzlePirateAutomation::attachProcess()
 
 void PuzzlePirateAutomation::updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height)
 {
-    Overlay::updateWindowRect(left,top, width, height);
-
     msp[RETURN_TO_GAME] = ScreenPoint(width - 175, 11);
     msp[TIP_OFF] = ScreenPoint(width - 130, 514);
     msp[CREATE_ACCOUNT] = ScreenPoint(20, 15);
@@ -207,27 +205,26 @@ namespace Manager
 
 BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-	WindowHookData* whd = &PuzzlePirateAutomation::whd;
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
         {
 			// AllocConsole();
 			// freopen("CONOUT$", "w", stdout);
-			whd->instance = (HMODULE)hModule;
+			whd.instance = (HMODULE)hModule;
 			srand((unsigned)time(NULL));
 
-            whd->hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE, 0, sizeof(WindowData), WINDATASMNAME);
-			if (!whd->hMapFile) Utils::printMsg("Could not create file mapping object (%ld).\n",GetLastError());
+            whd.hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE, 0, sizeof(WindowData), WINDATASMNAME);
+			if (!whd.hMapFile) Utils::printMsg("Could not create file mapping object (%ld).\n",GetLastError());
                     
-            whd->wd = (WindowData*)MapViewOfFile(whd->hMapFile, FILE_MAP_ALL_ACCESS,0,0, 0);
-            if (!whd->wd)
+            whd.wd = (WindowData*)MapViewOfFile(whd.hMapFile, FILE_MAP_ALL_ACCESS,0,0, 0);
+            if (!whd.wd)
             {
                 Utils::printMsg("Could not map view of file (%ld).\n",GetLastError());
-                CloseHandle(whd->hMapFile);
+                CloseHandle(whd.hMapFile);
                 return false;
             }
-            memset(whd->wd, 0, sizeof(WindowData));
+            memset(whd.wd, 0, sizeof(WindowData));
         }
         break;
     }

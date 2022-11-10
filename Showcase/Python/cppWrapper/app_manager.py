@@ -1,6 +1,6 @@
 from ctypes import *
 from enum import IntEnum
-from typing import Any
+from typing import Any, Tuple
 
 MANAGER_DLL_PATH = "./cppWrapper/manager.dll"
 
@@ -10,6 +10,16 @@ class CreateType(IntEnum):
     BROADCAST = 2
 
 
+class WindowRect(Structure):
+    _fields_ = [
+        ("left", c_long),
+        ("top", c_long),
+        ("right", c_long),
+        ("buttom", c_long),
+
+    ]
+
+
 class WindowHookData(Structure):
     _fields_ = [
         ("keys", c_bool * 256),
@@ -17,7 +27,11 @@ class WindowHookData(Structure):
         ("middleClick", c_bool),
         ("rightClick", c_bool),
         ("xPos", c_int),
-        ("yPos", c_int)]
+        ("yPos", c_int),
+        ("blockInput", c_bool),
+        ("_target_hwnd", c_void_p),
+        ("screenRect", WindowRect),
+        ]
 
     def __init__(self, *args: Any, **kw: Any) -> None:
         super(WindowHookData).__init__(*args, **kw)
@@ -28,6 +42,9 @@ class WindowHookData(Structure):
         self.middleClick: bool
         self.keys: list
 
+    def get_mouse_pos(self) -> Tuple[int, int]:
+        return self.xPos, self.yPos
+
     def is_alt(self) -> bool:
         return self.keys[0x12]
 
@@ -36,6 +53,15 @@ class WindowHookData(Structure):
     
     def is_shift(self) -> bool:
         return self.keys[0x10]
+    
+    def is_key_press(self, key: int) -> bool:
+        '''
+        the list of virtual key code can be found in https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+        '''
+        return self.keys[key]
+
+    def block_input(self, enable: bool):
+        self.blockInput = enable
 
 
 
@@ -43,7 +69,7 @@ class AppManager:
     def __init__(self, parent_window_title: str = None, manager_dll_path: str = MANAGER_DLL_PATH):
         self.instances: list[int] = list()
         self.manager_dll = self.load_manager_dll(manager_dll_path)
-        self._parent_hwnd = self.FindWindow(parent_window_title) if parent_window_title else None
+        self._parent_hwnd = self.find_window(parent_window_title) if parent_window_title else None
         self._wd = POINTER(WindowHookData)()
 
         self.init()
@@ -129,40 +155,40 @@ class AppManager:
         self.manager_dll.cleanUp()
 
     def create_instance(self, puzzle_pirate_path: str, type: CreateType = CreateType.BROADCAST) -> int:
-        key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), byref(self._wd), c_int(type.value))
+        key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), byref(self._wd), type.value)
         self.instances.append(key)
         return key
 
     def remove_instance(self, key: int):
         self.instances.remove(key)
-        self.manager_dll.removeInstace(c_int(key))
+        self.manager_dll.removeInstace(key)
 
     def remove_title_bar(self, key: int):
-        self.manager_dll.removeTitleBar(c_int(key))
+        self.manager_dll.removeTitleBar(key)
     
     def restroe_title_bar(self, key: int):
-        self.manager_dll.restoreTitleBar(c_int(key))
+        self.manager_dll.restoreTitleBar(key)
 
     def update_rect_window(self, key: int, x: int, y: int, width: int, height: int):
-        self.manager_dll.updateRectWindow(c_int(key), c_int(x), c_int(y), c_int(width), c_int(height))
+        self.manager_dll.updateRectWindow(key, x, y, width, height)
 
     def mouse_click(self, key: int, x: int, y: int, right_click: bool = False):
-        self.manager_dll.mouseClick(c_int(key), c_int(x), c_int(y), c_bool(right_click))
+        self.manager_dll.mouseClick(key, x, y, c_bool(right_click))
 
     def send_key_press(self, key: int, key_stroke: str):
-        self.manager_dll.sendKeyPress(c_int(key), c_char(key_stroke[0].upper()))
+        self.manager_dll.sendKeyPress(key, c_char(key_stroke[0].upper()))
 
     def send_key_down(self, key: int, key_stroke: str):
-        self.manager_dll.sendKeyDown(c_int(key), c_char(key_stroke[0].upper()))
+        self.manager_dll.sendKeyDown(key, c_char(key_stroke[0].upper()))
 
     def send_key_up(self, key: int, key_stroke: str):
-        self.manager_dll.sendKeyUp(c_int(key), c_char(key_stroke[0].upper()))
+        self.manager_dll.sendKeyUp(key, c_char(key_stroke[0].upper()))
 
     def send_char(self, key: int, chr: str):
-        self.manager_dll.sendChar(c_int(key), c_char(chr[0]))
+        self.manager_dll.sendChar(key, c_char(chr[0]))
 
     def send_string(self, key: int, string: str):
-        self.manager_dll.sendString(c_int(key), string.encode("utf-8"))
+        self.manager_dll.sendString(key, string.encode("utf-8"))
 
     def set_parent_hwnd(self, key: int):
         self._parent_hwnd = key
@@ -170,11 +196,11 @@ class AppManager:
     def get_parent_hwnd(self) -> int:
         return self._parent_hwnd
 
-    def FindWindow(self, window_name: str) -> int:
+    def find_window(self, window_name: str) -> int:
         return self.manager_dll.findWindow(window_name.encode("utf-8"))
 
     def login(self, key: int, user_name: str, password: str, pirate_number: int):
-        return self.manager_dll.login(c_int(key), user_name.encode("utf-8"), password.encode("utf-8"), c_int(pirate_number))
+        return self.manager_dll.login(key, user_name.encode("utf-8"), password.encode("utf-8"), pirate_number)
 
     def attachToWindow(self, from_key: int, to_key: int):
         self.manager_dll.attachToWindow(from_key, to_key)
@@ -184,7 +210,7 @@ class AppManager:
             self.hide(key)
 
     def hide(self, key: int):
-        self.manager_dll.hide(c_int(key))
+        self.manager_dll.hide(key)
     
     def show(self, key: int):
         self.hide_all()

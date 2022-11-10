@@ -1,3 +1,4 @@
+from pickle import TRUE
 import sys
 from time import sleep
 from PyQt5 import QtWidgets, uic, QtGui
@@ -70,8 +71,8 @@ class Ui(QtWidgets.QMainWindow):
     def _add_bot(self):
         
         key = self.manager.create_instance("C:\\games\\Puzzle Pirates", type=CreateType.CREATE_PROCESS)
-        self.manager.remove_title_bar(key)
-        self.manager.attachToWindow(key, self.manager.get_parent_hwnd())
+        # self.manager.remove_title_bar(key)
+        # self.manager.attachToWindow(key, self.manager.get_parent_hwnd())
         self._update_child_rect_window(key)
         
         length = len(self.manager.instances)
@@ -93,9 +94,11 @@ class Ui(QtWidgets.QMainWindow):
         self.manager.show(self.current_key)
         
     def _add_bots_from_config(self):
-        self.manager.draw_text("hey", 100, 100, 0xffff00)
-        self.manager.draw_rect(0, 0, 50, 50, 0xffff00, True)
-        self.manager.present()
+        pass
+        # self.winData.block_input(TRUE)
+        # self.manager.draw_text("hey", 100, 100, 0xffff00)
+        # self.manager.draw_rect(0, 0, 50, 50, 0xffff00, True)
+        # self.manager.present()
 
     def _side_thread(self):
         '''
@@ -127,9 +130,11 @@ class Ui(QtWidgets.QMainWindow):
                 for rect in save_rects:
                     self.manager.draw_rect(rect[0], rect[1], rect[2], rect[3], 0xffff00, True)
 
+                self.label_pos.setText(f"{self.winData.xPos},{self.winData.yPos}")
+
                 self.manager.present()
             
-            #sleep(0.1)
+            sleep(0.01)
 
 
 

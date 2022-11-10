@@ -1,5 +1,6 @@
 #pragma once
 #include"../utils/utils.h"
+#include"../hooks/windowHook.h"
 #include<thread>
 #include<vector>
 

@@ -26,7 +26,7 @@ namespace Manager
 
 	void init()
 	{
-		Overlay::init(Communication::whd.instance);
+		Overlay::init(whd.instance);
 	}
 
 	void cleanUp()
@@ -122,5 +122,7 @@ namespace Manager
 	{
 		isValidKey(key) ? instances[key]->setWindowRect(x, y, width, height) : errorMsg();
 	}
+
+
 }
 

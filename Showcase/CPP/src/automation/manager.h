@@ -2,7 +2,6 @@
 #include"communication.h"
 
 
-
 namespace Manager
 {
 	bool isValidKey(HWND key);
@@ -27,5 +26,6 @@ namespace Manager
 	EXPORT void attachToWindow(HWND key, HWND attachTo);
 	EXPORT HWND findWindow(const char * str);
 	EXPORT void updateRectWindow(HWND key, int x, int y, int width, int height);
+
 };
 
