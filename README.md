@@ -1,12 +1,23 @@
 # show-case-WIP
 ## Description
-Built a pong game using 𝐦𝐲 𝐨𝐰𝐧 𝐠𝐫𝐚𝐩𝐡𝐢𝐜 wrapper [2D-Graphic-Wrapper-Using-DirectX11](https://github.com/soulsama972/2D-Graphic-Wrapper-Using-DirectX11) and then created 𝐀𝐈 𝐌𝐨𝐝𝐞𝐥 that learns how to play the game using: 𝐠𝐞𝐧𝐞𝐭𝐢𝐜 𝐚𝐥𝐠𝐨𝐫𝐢𝐭𝐡𝐦
+
+automate tool with a graphic interface that use windows internal function.
+you can attach/launch a process.
+use virtual keyboard/mouse.
+esay opening and managing multi processing (same process/application).
+
+WIP
+[] multi diffrent applications/processes.
+[] linux support.
+
+
 
 ## Game Rules
 * Collection the green food
 * Avoiding the red food
 
 
-## Video Example
+## Screenshot Example
 
-<img src="" width="70%" height="50%" />
+<img src="show_case_img.png" width="70%" height="50%" />
+
