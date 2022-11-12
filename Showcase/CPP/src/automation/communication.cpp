@@ -17,11 +17,11 @@ HWND Communication::init(WindowData*& winData, uint32_t procId, CreateType type)
     {
     case CREATE_PROCESS: wi = openProcess(); break;  
     case ATTACH: wi = attachProcess(procId);break; 
-    case BROADCAST: wi = {0, HWND_BROADCAST, false}; break;
+    case BROADCAST: wi = {0, HWND_DESKTOP, false}; break;
     default:
         break;
     }
-    if (!wi.hwnd) 
+    if (!wi.hwnd && type != BROADCAST) 
     {
         Utils::printMsg("failed to get hwnd \n");
         return 0;
@@ -29,8 +29,8 @@ HWND Communication::init(WindowData*& winData, uint32_t procId, CreateType type)
 
     if(getSafeStatus())
     {
-        updateWindowRect();
         WindowHook::setWindowHook(wi.hwnd, winData);
+        updateWindowRect();
     }
 
     return wi.hwnd;

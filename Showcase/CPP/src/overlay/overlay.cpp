@@ -80,7 +80,6 @@ namespace Overlay
 
     void present() 
     {
-
         HDC hdc = GetDC(overlayHwnd);
         HDC memDC = CreateCompatibleDC ( hdc );
         HBITMAP memBM = CreateCompatibleBitmap(hdc, screenWidth, screenHeight);
@@ -91,7 +90,6 @@ namespace Overlay
 
         BitBlt(hdc, 0, 0, screenWidth, screenHeight, memDC, 0, 0, SRCCOPY);
 
-        
         DeleteObject(memBM);
         DeleteDC(memDC);
         ReleaseDC(overlayHwnd, hdc);
@@ -122,7 +120,6 @@ namespace Overlay
     {
         RECT textRect = {oText.x, oText.y, screenWidth, screenHeight};
 
-
         HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
         LOGFONT logfont;
         GetObject(hFont, sizeof(LOGFONT), &logfont);
@@ -142,7 +139,21 @@ namespace Overlay
 
     void updateWindowRect(int x, int y, int w, int h)
     {
+        if(whd.wd->target == HWND_DESKTOP)
+        {
+            RECT desktop;
+            const HWND hDesktop = GetDesktopWindow();
+            GetWindowRect(hDesktop, &desktop);
+
+            x = screenLeftPos = desktop.left;
+            y = screenTopPos = desktop.top;
+
+            screenWidth = w = desktop.right;
+            screenHeight = h = desktop.bottom;
+        }
         if(overlayHwnd) MoveWindow(overlayHwnd, x, y, w, h, true);
+
+        printf("%d \n",SetWindowPos(overlayHwnd, HWND_TOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED));
     }
 
     void draw(HDC hdc)

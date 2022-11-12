@@ -8,29 +8,28 @@ namespace WindowHook
     void setWindowHook(HWND hwnd)
     {
         removeHook();
-
-        DWORD thread_id = GetWindowThreadProcessId(hwnd,NULL);
-        if(!thread_id)
+        DWORD threadID = GetWindowThreadProcessId(hwnd,NULL);
+        if(!threadID && hwnd != HWND_DESKTOP)
         {
             Utils::printMsg("error getting thread proc id\n");
             return;
         }
 
-        whd.hList[WinHookType::KEYBOARD] = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)keyBoardCallBack, whd.instance, thread_id);
+        whd.hList[WinHookType::KEYBOARD] = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)keyBoardCallBack, whd.instance, threadID);
         if (!whd.hList[WinHookType::KEYBOARD])
         {
             Utils::printMsg("Failed to install keyboard hook! %ld \n",  GetLastError());
             return;
         }
 
-        whd.hList[WinHookType::MOUSE] = SetWindowsHookEx(WH_MOUSE, (HOOKPROC)mouseCallBack, whd.instance, thread_id);
+        whd.hList[WinHookType::MOUSE] = SetWindowsHookEx(WH_MOUSE, (HOOKPROC)mouseCallBack, whd.instance, threadID);
         if (!whd.hList[WinHookType::MOUSE])
         {
             Utils::printMsg("Failed to install mouse hook!  %ld \n", GetLastError());
             return;
         }
 
-        whd.hList[WinHookType::WINPROC] = SetWindowsHookEx(WH_CALLWNDPROC, (HOOKPROC)winProcCallBack,  whd.instance, thread_id);
+        whd.hList[WinHookType::WINPROC] = SetWindowsHookEx(WH_CALLWNDPROC, (HOOKPROC)winProcCallBack,  whd.instance, threadID);
         if (!whd.hList[WinHookType::WINPROC])
         {
             Utils::printMsg("Failed to install hWinProc hook! %ld \n",  GetLastError());
@@ -57,6 +56,11 @@ namespace WindowHook
         }
     }
 
+    bool is_valid_to_block_communication()
+    {
+        return whd.wd->blockInputCommunication && whd.wd->target != HWND_DESKTOP;
+    }
+
     LRESULT __stdcall keyBoardCallBack(int nCode, WPARAM wParam, LPARAM lParam)
     {
         if(nCode >= 0)
@@ -64,7 +68,7 @@ namespace WindowHook
             bool press = !((lParam >> 31) && 1);
             whd.wd->keys[wParam] = press;
         }
-        if (whd.wd->blockInputCommunication) return true;
+        if (is_valid_to_block_communication()) return true;
 
         return CallNextHookEx(whd.hList[WinHookType::KEYBOARD], nCode, wParam, lParam);
     }
@@ -93,7 +97,7 @@ namespace WindowHook
             default: break;
             }
         }
-        if (whd.wd->blockInputCommunication) return true;
+        if (is_valid_to_block_communication()) return true;
 
         return CallNextHookEx(whd.hList[WinHookType::MOUSE], nCode, wParam, lParam);
     }
@@ -114,7 +118,7 @@ namespace WindowHook
                 break;
             }
         }
-        if (whd.wd->blockInputCommunication) return true;
+        if (is_valid_to_block_communication()) return true;
 
         return CallNextHookEx(whd.hList[WinHookType::WINPROC], nCode, wParam, lParam);
     }

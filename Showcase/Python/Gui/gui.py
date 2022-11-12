@@ -46,7 +46,6 @@ class Ui(QtWidgets.QMainWindow):
         self.th = Thread(target=self._side_thread, args=())
         self.th.start()
 
-        
     def _update_child_rect_window(self, key: int):
         p = self.label_display.geometry().topLeft()
         window_pos = p.x() + 1, p.y() + 20
@@ -70,9 +69,9 @@ class Ui(QtWidgets.QMainWindow):
 
     def _add_bot(self):
         
-        key = self.manager.create_instance("C:\\games\\Puzzle Pirates", 28488, type=CreateType.CREATE_PROCESS)
+        key = self.manager.create_instance("C:\\games\\Puzzle Pirates", 28488, type=CreateType.BROADCAST)
         self.manager.remove_title_bar(key)
-        self.manager.attach_to_window(key, self.manager.get_parent_hwnd())
+        # self.manager.attach_to_window(key, self.manager.get_parent_hwnd())
         self._update_child_rect_window(key)
         
         length = len(self.manager.instances)
@@ -111,15 +110,13 @@ class Ui(QtWidgets.QMainWindow):
        
         while self.run:
             if self.winData:
-            #    print(self.winData.xPos, self.winData.yPos, self.winData.leftClick, self.winData.middleClick, self.winData.rightClick, self.winData.is_alt())
-            #    print(self.appData.keys[32])
                 if self.winData.leftClick and not capture:
                     startX = self.winData.xPos
                     startY = self.winData.yPos
-                    capture = True
+                    #capture = True
                 
                 if not self.winData.leftClick and capture:
-                    save_rects.append([startX, startY, self.winData.xPos, self.winData.yPos])
+                    # save_rects.append([startX, startY, self.winData.xPos, self.winData.yPos])
                     capture = False
 
                 if capture:
@@ -132,12 +129,11 @@ class Ui(QtWidgets.QMainWindow):
 
 
                 self.manager.draw_text("ShowCase", 50, 100, 0xffff00, 30)
-                self.manager.present()
             
+                if self.winData.is_key_press(ord('Z')):
+                    save_rects = save_rects[:-1]
 
-
-            if self.winData.is_key_press(ord('Z')):
-                save_rects = save_rects[:-1]
+                self.manager.present()
 
             sleep(0.01)
 
