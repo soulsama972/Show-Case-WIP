@@ -62,22 +62,19 @@ class PuzzlePirateAutomation : public Communication
 {
 public:
     PuzzlePirateAutomation() = default;
-    PuzzlePirateAutomation(const std::string& puzzlePath, WindowData*& winData, CreateType type = CREATE_PROCESS);
-    HWND init(const std::string& puzzlePath, WindowData*& winData, CreateType type = CREATE_PROCESS);
+    PuzzlePirateAutomation(const std::string& puzzlePath, WindowData*& winData, uint32_t procId, CreateType type = CREATE_PROCESS);
+    HWND init(const std::string& puzzlePath, WindowData*& winData, uint32_t procId, CreateType type = CREATE_PROCESS);
     void login(const std::string& userName,const std::string& password, int whichPirate = 1) const;
     void createAccount(const std::string& outputFile, const std::string& password) const;
 private:
     WindowInfo openProcess() override;
-    WindowInfo attachProcess() override;
     void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) override;
-
-
     DWORD getJavaProcId(const std::unordered_map<DWORD, bool>& ignoreProcList) const;
     std::string path;
 };
 
 namespace Manager
 {
-    EXPORT HWND createInstace(const char* puzzlePath, WindowData*& winData, CreateType type);
+    EXPORT HWND createInstace(const char* puzzlePath, WindowData*& winData, uint32_t procId, CreateType type);
     EXPORT void login(HWND key, const char* userName, const char* password, int pirateNumber);
 }

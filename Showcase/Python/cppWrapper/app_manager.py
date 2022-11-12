@@ -83,7 +83,7 @@ class AppManager:
         manager_dll.cleanUp.argtypes = None
         manager_dll.cleanUp.restype = None
 
-        manager_dll.createInstace.argtypes = c_char_p, POINTER(POINTER(WindowHookData)), c_int
+        manager_dll.createInstace.argtypes = c_char_p, POINTER(POINTER(WindowHookData)), c_uint32, c_int
         manager_dll.createInstace.restype = c_int
         
         manager_dll.removeInstace.argtypes = c_int,
@@ -154,8 +154,8 @@ class AppManager:
     def clean_up(self):
         self.manager_dll.cleanUp()
 
-    def create_instance(self, puzzle_pirate_path: str, type: CreateType = CreateType.BROADCAST) -> int:
-        key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), byref(self._wd), type.value)
+    def create_instance(self, puzzle_pirate_path: str, process_id: int, type: CreateType = CreateType.BROADCAST) -> int:
+        key = self.manager_dll.createInstace(puzzle_pirate_path.encode("utf-8"), byref(self._wd), process_id, type.value)
         self.instances.append(key)
         return key
 

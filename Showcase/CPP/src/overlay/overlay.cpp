@@ -69,13 +69,12 @@ namespace Overlay
         MSG msg;
 
         SetTimer(overlayHwnd, 0, 1, NULL);
-
+        Utils::printMsg("fatching event.. \n");
+        
         while (GetMessageA(&msg, overlayHwnd, 0, 0) && !isDone)
         {
             TranslateMessage(&msg);
-            DispatchMessage(&msg);
-
-            
+            DispatchMessage(&msg);   
         }
     }
 

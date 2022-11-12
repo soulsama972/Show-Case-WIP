@@ -1,14 +1,14 @@
 #include"puzzlePirateAutomation.h"
 
-PuzzlePirateAutomation::PuzzlePirateAutomation(const std::string& puzzlePath, WindowData*& winData, CreateType type)
+PuzzlePirateAutomation::PuzzlePirateAutomation(const std::string& puzzlePath, WindowData*& winData, uint32_t procId, CreateType type)
 {
-    init(puzzlePath, winData, type);
+    init(puzzlePath, winData, procId, type);
 }
 
-HWND PuzzlePirateAutomation::init(const std::string& puzzlePath, WindowData*& winData, CreateType type)
+HWND PuzzlePirateAutomation::init(const std::string& puzzlePath, WindowData*& winData, uint32_t procId, CreateType type)
 {
     path = puzzlePath;
-    return Communication::init(winData, type);
+    return Communication::init(winData, procId, type);
 }
 
 void PuzzlePirateAutomation::login(const std::string& userName, const std::string& password, int whichPirate) const
@@ -114,15 +114,6 @@ WindowInfo PuzzlePirateAutomation::openProcess()
 
 }
 
-WindowInfo PuzzlePirateAutomation::attachProcess()
-{
-    WindowInfo wi = { 0 };
-    wi.prcoessId = getJavaProcId({}); // passing empty list so we attach to the first process found
-    wi.hwnd = FindWindowA("SunAwtFrame", 0);
-    wi.attach = true;
-    return wi;
-}
-
 void PuzzlePirateAutomation::updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height)
 {
     msp[RETURN_TO_GAME] = ScreenPoint(width - 175, 11);
@@ -186,9 +177,9 @@ DWORD PuzzlePirateAutomation::getJavaProcId(const std::unordered_map<DWORD, bool
 
 namespace Manager
 {
-    HWND createInstace(const char* puzzlePath, WindowData*& winData, CreateType type)
+    HWND createInstace(const char* puzzlePath, WindowData*& winData, uint32_t procId, CreateType type)
     {
-        PuzzlePirateAutomation * inst = new PuzzlePirateAutomation(std::string(puzzlePath), winData, type);
+        PuzzlePirateAutomation * inst = new PuzzlePirateAutomation(std::string(puzzlePath), winData, procId, type);
         HWND key = inst->getHWND();
         AddInstance(key, inst);
         return key;

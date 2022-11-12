@@ -27,14 +27,14 @@ struct ScreenPoint
 class Communication
 {
 public:
-    virtual ~Communication()  {}
+    virtual ~Communication();
 
-    Communication(): yPading(30), left(0), top(0), width(0), height(0)
+    Communication(): yPading(30), left(0), top(0), width(0), height(0), isSafe(true)
     {
         memset(&wi, 0, sizeof(wi));
     }
     
-    HWND init(WindowData*& winData, CreateType type);
+    HWND init(WindowData*& winData,uint32_t procId, CreateType type);
 
     void setWindowRect(int x, int y, int width, int height);
 
@@ -45,8 +45,6 @@ public:
     void removeTitleBar();
 
     void restoreTitleBar();
-
-    void blockInputCommunication() const;
 
     inline void sendKeyDown(char keyStroke) const
     {
@@ -100,7 +98,8 @@ public:
     inline void show() const
     {
         ShowWindow(wi.hwnd, SW_SHOW);
-        WindowHook::setWindowHook(wi.hwnd);
+        if(getSafeStatus())
+        WindowHook::setWindowHook(wi.hwnd);    
     }
     
     inline HWND getHWND() const
@@ -124,13 +123,19 @@ public:
 protected:
     void updateWindowRect();
     virtual WindowInfo openProcess() = 0;
-    virtual WindowInfo attachProcess() = 0;
+    virtual WindowInfo attachProcess(uint32_t procId);
     virtual void updateScreenPoint(std::unordered_map<int, ScreenPoint>& msp, int left, int top, int width, int height) = 0;
+
+
+private:
+    inline void setSafeStatus(bool enable) {isSafe = enable;};
+    inline bool getSafeStatus() const {return isSafe;}
 
 private:
     std::unordered_map<int, ScreenPoint> msp;
     int yPading;
     int left, top, width, height;
     WindowInfo wi;
+    bool isSafe;
 
 };

@@ -70,7 +70,7 @@ class Ui(QtWidgets.QMainWindow):
 
     def _add_bot(self):
         
-        key = self.manager.create_instance("C:\\games\\Puzzle Pirates", type=CreateType.CREATE_PROCESS)
+        key = self.manager.create_instance("C:\\games\\Puzzle Pirates", 28488, type=CreateType.CREATE_PROCESS)
         self.manager.remove_title_bar(key)
         self.manager.attach_to_window(key, self.manager.get_parent_hwnd())
         self._update_child_rect_window(key)

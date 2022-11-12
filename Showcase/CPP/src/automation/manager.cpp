@@ -31,10 +31,15 @@ namespace Manager
 
 	void cleanUp()
 	{
-		for (auto& instance: instances)
+		for (auto instance: instances)
 			delete instance.second;
-		
+
+		instances.clear();
 		Overlay::cleanUp();
+		WindowHook::removeHook();
+		UnmapViewOfFile(whd.wd);
+		CloseHandle(whd.hMapFile);
+		
 	}
 
 	void removeInstace(HWND key)

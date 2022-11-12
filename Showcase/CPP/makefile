@@ -8,7 +8,7 @@ utilsPath := src/utils
 overlayPath := src/overlay
 buildPath := ../build
 objPath := ../OBJ
-testPath := src
+testPath := src/Test
 cppWrapperPath := ../Python/cppWrapper
 examplePath := src/example
 

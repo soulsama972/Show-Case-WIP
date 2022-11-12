@@ -2,7 +2,7 @@
 #include<windows.h>
 #include"../utils/utils.h"
 
-#define WINDATASMNAME "Global\\SMWindowData"
+#define WINDATASMNAME "SMWindowData"
 
 constexpr int winHookCount = 3; // size = type of hook
 

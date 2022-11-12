@@ -1,24 +1,38 @@
 #include"communication.h"
 
+Communication::~Communication()
+{
+    setSafeStatus(false);
+    restoreTitleBar(); 
+    attachToWindow(HWND_DESKTOP);
+    show();
+    setSafeStatus(true);
+}
 
-HWND Communication::init(WindowData*& winData, CreateType type)
+HWND Communication::init(WindowData*& winData, uint32_t procId, CreateType type)
 {
     if (wi.hwnd) return wi.hwnd;
     
     switch (type)
     {
     case CREATE_PROCESS: wi = openProcess(); break;  
-    case ATTACH: wi = attachProcess();break; 
+    case ATTACH: wi = attachProcess(procId);break; 
     case BROADCAST: wi = {0, HWND_BROADCAST, false}; break;
     default:
         break;
     }
-    if (!wi.hwnd) Utils::printMsg("failed to get hwnd \n");
-    else
-        updateWindowRect();
+    if (!wi.hwnd) 
+    {
+        Utils::printMsg("failed to get hwnd \n");
+        return 0;
+    }
 
-    WindowHook::setWindowHook(wi.hwnd, winData);
-    
+    if(getSafeStatus())
+    {
+        updateWindowRect();
+        WindowHook::setWindowHook(wi.hwnd, winData);
+    }
+
     return wi.hwnd;
 }
 
@@ -80,5 +94,14 @@ void Communication::updateWindowRect()
     LONG lStyle = GetWindowLong(wi.hwnd, GWL_STYLE);
     yPading = lStyle & WS_BORDER ? 30 : 0;
 
-    updateScreenPoint(msp,left,top, width, height);
+    if(getSafeStatus()) updateScreenPoint(msp,left,top, width, height);
+}
+
+WindowInfo Communication::attachProcess(uint32_t procId)
+{
+    WindowInfo wi = {0};
+    wi.prcoessId = procId;
+    EnumWindows(Utils::getHWND, (LPARAM)&wi);
+    wi.attach = true;
+    return wi;
 }
